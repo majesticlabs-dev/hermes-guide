@@ -1,0 +1,231 @@
+# Multi-Agent Profiles for Hermes
+
+How to run multiple specialized Hermes agents — each with its own personality, memory, and workspace — by cloning profiles, writing dedicated SOUL.md files, sharing AGENTS.md, and invoking them separately.
+
+## Why Isolated Profiles Beat Context Stuffing
+
+The temptation is to cram everything into one agent: "You're a writer AND a VP of Marketing AND a debug engineer." That works for about five minutes, then the context gets muddy. The agent loses coherence because it's trying to hold contradictory mandates in one head.
+
+Isolated profiles solve this cleanly:
+
+- **Each profile gets its own SOUL.md.** The writer agent doesn't need to think about CAC projections. The marketing VP doesn't need to care about code style.
+- **Each profile gets its own memory, sessions, and logs.** No cross-contamination between agent workspaces.
+- **Each profile gets its own config.yaml.** You can route different profiles to different model providers (e.g., writer on GLM-5.1, vpmktg on GPT-5.4).
+- **AGENTS.md is shared across profiles.** Project-level context — repo layout, API surface, deployment details — stays in one file that every profile reads. No duplication, no drift.
+
+The pattern is simple: one Hermes install, multiple profiles, each a specialist. You invoke the right one for the right job.
+
+## The 4-Step Setup
+
+### Step 1: Clone a Profile
+
+Create a new profile by cloning your existing one. This copies `config.yaml`, `.env`, and `SOUL.md` from the active profile as a starting point.
+
+```bash
+hermes profile create writer --clone
+hermes profile create vpmktg --clone
+```
+
+Flags:
+- `--clone` copies config.yaml, .env, and SOUL.md from the active profile.
+- `--clone-all` does a full state copy (memories, sessions, logs, everything).
+- `--clone-from SOURCE` lets you pick which profile to clone from instead of the active one.
+- `--no-alias` skips the wrapper script creation if you don't want one.
+
+### Step 2: Write a Dedicated SOUL.md
+
+Edit the new profile's SOUL.md to define that agent's personality, expertise, and operating rules. This is the key differentiator between profiles — it's what makes the writer different from the marketing VP.
+
+```bash
+vim ~/.hermes/profiles/writer/SOUL.md
+vim ~/.hermes/profiles/vpmktg/SOUL.md
+```
+
+The SOUL.md should define:
+- **Identity and tone** — who this agent is, how it communicates
+- **Domain expertise** — what this agent specializes in
+- **Operating principles** — how it approaches tasks, what it avoids
+- **Process discipline** — any hard rules for this role
+
+### Step 3: Share AGENTS.md
+
+AGENTS.md lives at the project/repo level and describes the codebase, API, deployment details, and anything all agents need to know. Every profile reads the same AGENTS.md — no per-profile copy needed.
+
+```
+your-project/
+  AGENTS.md        <-- shared context, all profiles read this
+  src/
+  ...
+```
+
+AGENTS.md typically covers:
+- Project structure and key files
+- API endpoints and data models
+- Deployment and environment details
+- Coding conventions and patterns
+
+This is where you put knowledge that's project-level, not agent-level. If you update the API surface, you update AGENTS.md once and every profile picks it up.
+
+### Step 4: Invoke Separately
+
+There are two ways to invoke a specific profile:
+
+**Via the `-p` flag:**
+```bash
+hermes -p writer "Draft a blog post about our new API"
+hermes -p vpmktg "Write a pricing page headline for the enterprise tier"
+```
+
+**Via wrapper scripts** (created automatically during `profile create` unless `--no-alias` is used):
+```bash
+writer "Draft a blog post about our new API"
+vpmktg "Write a pricing page headline for the enterprise tier"
+```
+
+The wrapper scripts live at `~/.local/bin/<profile-name>` and are simple one-liners:
+
+```sh
+#!/bin/sh
+exec hermes -p writer "$@"
+```
+
+They're just convenience aliases — functionally identical to `hermes -p NAME`.
+
+## Directory Structure
+
+After setup, the filesystem looks like this:
+
+```
+~/.hermes/
+  profiles/
+    writer/
+      SOUL.md          <-- writer-specific personality and rules
+      config.yaml      <-- writer-specific config (model, routing, etc.)
+      .env             <-- credentials (shared or per-profile)
+      memories/        <-- writer's own memory
+      sessions/        <-- writer's session history
+      logs/            <-- writer's logs
+      skills/          <-- writer's installed skills
+      plans/
+      workspace/
+      ...
+    vpmktg/
+      SOUL.md          <-- VP Marketing personality and rules
+      config.yaml      <-- can use a different model provider
+      .env
+      memories/        <-- separate memory from writer
+      sessions/
+      logs/
+      skills/
+      plans/
+      workspace/
+      ...
+
+~/.local/bin/
+  writer               <-- wrapper: exec hermes -p writer "$@"
+  vpmktg               <-- wrapper: exec hermes -p vpmktg "$@"
+
+your-project/
+  AGENTS.md            <-- shared project context (all profiles read this)
+```
+
+## Real Examples: writer and vpmktg
+
+We set up two profiles following this exact pattern.
+
+### writer Profile
+
+Purpose: Long-form content, copywriting, editing, tone-shaping.
+
+```bash
+hermes profile create writer --clone
+```
+
+Then customized `~/.hermes/profiles/writer/SOUL.md` with writing-specific instructions:
+- Strong opinions, no hedging, no corporate tone
+- Brevity as default, depth only when requested
+- Sharp wit, no filler
+- Process discipline: PRD gate for multi-file tasks, circuit breaker on repeated failures, failure logging
+
+Wrapper at `~/.local/bin/writer`:
+```sh
+#!/bin/sh
+exec hermes -p writer "$@"
+```
+
+### vpmktg Profile
+
+Purpose: Marketing strategy, campaign hooks, pricing page copy, positioning.
+
+```bash
+hermes profile create vpmktg --clone
+```
+
+Then customized `~/.hermes/profiles/vpmktg/SOUL.md` with marketing-specific instructions (same base personality as writer but tuned for marketing domain).
+
+Wrapper at `~/.local/bin/vpmktg`:
+```sh
+#!/bin/sh
+exec hermes -p vpmktg "$@"
+```
+
+### Using Them Side by Side
+
+```bash
+# Draft long-form content with the writer
+writer "Write a 2000-word deep dive on why context windows matter"
+
+# Generate campaign hooks with the marketing VP
+vpmktg "Brainstorm 30 campaign hooks for the product launch"
+
+# Or use the -p flag explicitly
+hermes -p writer "Edit this draft to be more punchy"
+hermes -p vpmktg "Give me three pricing page headline variants"
+```
+
+Both profiles share the same AGENTS.md at the project level, so they both understand the product, API, and codebase. But they bring different personalities and expertise to the conversation.
+
+## Practical Notes
+
+- **Cloning copies everything except state.** `--clone` gives you config.yaml, .env, and SOUL.md from the source profile. `--clone-all` copies sessions, memories, and logs too. Usually `--clone` is what you want — clean state, inherited config.
+- **Edit SOUL.md after cloning.** The cloned SOUL.md is a copy of the source profile's personality. Rewrite it immediately to match the new role.
+- **Config can differ per profile.** The writer might run on GLM-5.1 while vpmktg runs on GPT-5.4. Edit each profile's config.yaml independently.
+- **AGENTS.md is the shared brain.** Keep project-level knowledge in AGENTS.md, not in SOUL.md. SOUL.md is for identity, AGENTS.md is for context.
+- **Wrapper scripts are optional.** If you prefer, just use `hermes -p NAME` directly. The wrappers are convenience, not requirement.
+- **Memory is isolated.** Each profile has its own memories/ directory. The writer won't accidentally reference the marketing VP's session history. This is a feature, not a bug.
+
+## Verification
+
+### List all profiles
+```bash
+hermes profile list
+```
+
+### Show profile details
+```bash
+hermes profile show writer
+hermes profile show vpmktg
+```
+
+### Check wrapper scripts exist
+```bash
+ls -la ~/.local/bin/writer ~/.local/bin/vpmktg
+```
+
+### Test invocation
+```bash
+writer "ping"
+vpmktg "ping"
+```
+
+Each should respond with its own personality and context.
+
+## Files in This Setup
+
+- `~/.hermes/profiles/writer/SOUL.md` — writer personality
+- `~/.hermes/profiles/writer/config.yaml` — writer config
+- `~/.hermes/profiles/vpmktg/SOUL.md` — marketing VP personality
+- `~/.hermes/profiles/vpmktg/config.yaml` — marketing VP config
+- `~/.local/bin/writer` — wrapper script
+- `~/.local/bin/vpmktg` — wrapper script
+- `AGENTS.md` (project root) — shared project context
