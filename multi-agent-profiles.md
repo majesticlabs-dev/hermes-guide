@@ -185,6 +185,101 @@ hermes -p vpmktg "Give me three pricing page headline variants"
 
 Both profiles share the same AGENTS.md at the project level, so they both understand the product, API, and codebase. But they bring different personalities and expertise to the conversation.
 
+## Shared Context: Cross-Agent Knowledge Sharing
+
+Isolated profiles are great for specialization, but agents still need to agree on fundamentals: writing style rules, market intel, and corrections. Duplicating these into every SOUL.md means drift. The shared-context pattern solves this.
+
+### What It Is
+
+A single directory, `~/.hermes/shared-context/`, containing three files that every profile reads:
+
+| File | Purpose |
+|------|---------|
+| `THESIS.md` | Shared beliefs and positioning: writing rules, marketing principles, decision framework |
+| `SIGNALS.md` | Reference intel: market signals, content performance data, competitive intelligence, the voice decision matrix |
+| `FEEDBACK-LOG.md` | Style corrections and evolving conventions. Logged by any agent, enforced by all |
+
+These files live outside any single profile. Every profile references them from the same path. Update once, every agent picks it up.
+
+### Why It Matters
+
+Without shared context, each SOUL.md has to duplicate style rules and conventions independently. That breaks fast: one profile gets updated, the other doesn't, they start disagreeing about whether em dashes are allowed.
+
+The shared-context pattern gives you:
+
+- **Single source of truth for cross-cutting rules.** Writing conventions, banned words, voice decision matrix, all in one place.
+- **Live learning across agents.** When a reviewer catches a style violation, they log it in FEEDBACK-LOG.md. Every agent reads that file and treats it as a hard rule. One agent's correction becomes every agent's default.
+- **FEEDBACK-LOG entries override SOUL.md defaults.** This is the key mechanism. If a feedback entry contradicts a personality trait, output protocol step, or guardrail, the feedback log wins. It's a living errata sheet that takes precedence over static instructions.
+- **Market intel that any agent can append.** SIGNALS.md is append-only. Any agent that observes something worth noting (a competitor move, a content performance result, a new convention) adds an entry.
+
+### How to Wire It Into SOUL.md
+
+Add this block to every profile's SOUL.md (exact text, same in every profile):
+
+```
+On startup and when relevant tasks arrive, read these files:
+- `~/.hermes/shared-context/THESIS.md` — shared beliefs and positioning
+- `~/.hermes/shared-context/SIGNALS.md` — reference intel and market signals
+- `~/.hermes/shared-context/FEEDBACK-LOG.md` — style corrections and learnings
+
+Treat every entry in FEEDBACK-LOG as a hard rule that overrides defaults in this file.
+If a feedback entry contradicts a Core Convention or voice rule, the feedback log wins.
+```
+
+That's it. Six lines of instruction plus a blank separator. Both the writer and vpmktg profiles have this exact block at the top of their SOUL.md files, right after the identity section.
+
+### The Cleanup: Kill Redundant Skills
+
+When you move shared knowledge into the shared-context directory, check whether any skills are now redundant. In our setup, the `style-writer` skill duplicated conventions that THESIS.md and FEEDBACK-LOG.md now cover. We deleted it:
+
+```bash
+hermes skill delete style-writer
+```
+
+The rule: if a skill's entire purpose is now handled by a shared-context file, kill the skill. SOUL.md + shared-context should be enough for style and convention rules. Skills should handle procedural workflows (how to deploy, how to run tests), not static reference material.
+
+### Updated Directory Structure
+
+With shared context added, the filesystem looks like this:
+
+```
+~/.hermes/
+  shared-context/
+    THESIS.md          <-- shared beliefs (all profiles read this)
+    SIGNALS.md         <-- market intel (any agent can append)
+    FEEDBACK-LOG.md    <-- style corrections (overrides SOUL.md defaults)
+  profiles/
+    writer/
+      SOUL.md          <-- includes shared-context wiring block
+      config.yaml
+      .env
+      memories/
+      sessions/
+      logs/
+      skills/
+      plans/
+      workspace/
+      ...
+    vpmktg/
+      SOUL.md          <-- includes shared-context wiring block
+      config.yaml
+      .env
+      memories/
+      sessions/
+      logs/
+      skills/
+      plans/
+      workspace/
+      ...
+
+~/.local/bin/
+  writer               <-- wrapper: exec hermes -p writer "$@"
+  vpmktg               <-- wrapper: exec hermes -p vpmktg "$@"
+
+your-project/
+  AGENTS.md            <-- shared project context (all profiles read this)
+```
+
 ## Practical Notes
 
 - **Cloning copies everything except state.** `--clone` gives you config.yaml, .env, and SOUL.md from the source profile. `--clone-all` copies sessions, memories, and logs too. Usually `--clone` is what you want — clean state, inherited config.
@@ -222,9 +317,12 @@ Each should respond with its own personality and context.
 
 ## Files in This Setup
 
-- `~/.hermes/profiles/writer/SOUL.md` — writer personality
+- `~/.hermes/shared-context/THESIS.md` — shared beliefs and positioning (cross-agent)
+- `~/.hermes/shared-context/SIGNALS.md` — market intel and reference data (cross-agent)
+- `~/.hermes/shared-context/FEEDBACK-LOG.md` — style corrections, overrides SOUL.md (cross-agent)
+- `~/.hermes/profiles/writer/SOUL.md` — writer personality (includes shared-context wiring block)
 - `~/.hermes/profiles/writer/config.yaml` — writer config
-- `~/.hermes/profiles/vpmktg/SOUL.md` — marketing VP personality
+- `~/.hermes/profiles/vpmktg/SOUL.md` — marketing VP personality (includes shared-context wiring block)
 - `~/.hermes/profiles/vpmktg/config.yaml` — marketing VP config
 - `~/.local/bin/writer` — wrapper script
 - `~/.local/bin/vpmktg` — wrapper script

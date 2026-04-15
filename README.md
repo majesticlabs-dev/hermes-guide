@@ -8,7 +8,7 @@ Practical guides for setting up and extending Hermes Agent.
 - [Cloudflare Tunnel](cloudflare-tunnel.md) — How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 - [1Password CLI](1password-cli.md) — Using 1Password with Hermes Agent for secure credential management.
 - [Extending the Gateway API](extending-gateway-api.md) — How to add new endpoints, middleware, and features to the Hermes API server.
-- [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts. Includes writer and vpmktg examples.
+- [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts. Includes shared-context pattern (THESIS.md, SIGNALS.md, FEEDBACK-LOG.md) for cross-agent knowledge sharing, plus writer and vpmktg examples.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
 
 ## Operational Monitoring
