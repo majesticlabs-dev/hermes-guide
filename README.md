@@ -4,11 +4,15 @@ Practical guides for setting up and extending Hermes Agent.
 
 ## Guides
 
-- [Telegram Mini App Setup](telegram-miniapp-setup.md) — Full walkthrough for deploying the Hermes Telegram Mini App with Cloudflare Tunnel, Ed25519 auth, and the gateway API. Includes scorecard system documentation, operational scripts, and cron schedule.
+- [Telegram Mini App Setup](telegram-miniapp-setup.md) — Full walkthrough for deploying the Hermes Telegram Mini App with standalone proxy architecture (port 8643), Cloudflare Tunnel, Ed25519 auth, and the gateway API. Includes scorecard system documentation, operational scripts, and cron schedule.
+- [Mini App Standalone Proxy Plan](miniapp-standalone-proxy-plan.md) — Detailed implementation plan for the standalone mini-app proxy on port 8643 that decouples mini-app support from Hermes core (survives updates).
 - [Cloudflare Tunnel](cloudflare-tunnel.md) — How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 - [1Password CLI](1password-cli.md) — Using 1Password with Hermes Agent for secure credential management.
 - [Extending the Gateway API](extending-gateway-api.md) — How to add new endpoints, middleware, and features to the Hermes API server.
 - [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts. Includes shared-context pattern (THESIS.md, SIGNALS.md, FEEDBACK-LOG.md) for cross-agent knowledge sharing, plus writer and vpmktg examples.
+- [Workspace Auto-Start & Auth](workspace-autostart.md) — How Hermes Workspace auto-starts via launchd after reboot, the gateway/workspace plist arrangement, and the HERMES_API_TOKEN wiring needed to make /jobs and other authenticated endpoints work.
+- [Message Queuing & Telegram Batching](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when a new message arrives while the agent is busy, plus Telegram-specific text and media batching windows that coalesce rapid messages.
+- [Fizzy Task Coordination](fizzy-task-coordination.md) — How Hermes integrates with Fizzy (fizzy.do) for agent-to-agent task coordination. Covers the Ruby CLI gem, board layout (inbox/doing/blocked/in_review/done/deferred), full card lifecycle, subagent handoff templates, session-start checks, and when to promote tasks to Fizzy vs keeping them on internal todo.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
 
 ## Operational Monitoring
