@@ -27,7 +27,7 @@ The strongest overall brain model. Native agentic design pairs powerfully with H
 ### Qwen 3.6 Plus — "Always-On Reasoning"
 Unique always-on reasoning trace (no toggle). Preserves chain-of-thought across *all* prior turns in a session, not just the current one. Produces fewer contradictions in long-horizon tasks. Great starting model for new Hermes setups.
 
-**Use for:** Long-horizon agentic tasks, planning sessions where consistency across 10+ turns matters.
+**Use for:** Fallback orchestrator, long-horizon agentic tasks, planning sessions where consistency across 10+ turns matters.
 
 ### Kimi K2.5 — "Swarm Orchestrator"
 Versatile enough to be both orchestrator and executor. Native image input for front-end/UI reasoning. Swarm agents feature — up to 100 parallel sub-agents, 1500 tool calls without predefined workflow. Compound effect inside Hermes for research and extraction workflows.
@@ -46,11 +46,11 @@ Strongest Google model. Native video and audio input. Good for extracting struct
 ## Executors (Worker / Subagent)
 
 ### MiMo-V2-Pro — "High Volume King"
-Most-used model on OpenRouter for Hermes this month. Free via Xiaomi API. Purpose-trained for agentic use cases — tool calls integrate cleanly with Hermes skill registry. Great for testing and building skill workflows. Skills generated carry over to future sessions and survive model switches.
+Most-used model on OpenRouter for Hermes this month. Purpose-trained for agentic use cases — tool calls integrate cleanly with Hermes skill registry. Great for testing and building skill workflows. Skills generated carry over to future sessions and survive model switches.
 
-**Use for:** High-volume document processing, long agentic workflows (hours), skill building and testing, budget-conscious execution.
+**Pricing:** $1/M input, $3/M output (OpenRouter)
 
-**Note:** Free for now but unlikely to stay free.
+**Use for:** High-volume document processing, long agentic workflows (hours), skill building and testing, low-cost execution.
 
 ### MiniMax M2.7 — "Agentic-Native Executor"
 Trained on the OpenClaw agent harness framework (same lineage as Hermes). Thinks in agentic terms natively — no heavy system prompt scaffolding needed. Official partner with Nous Research. Give it a plan and it executes. Don't ask it to plan.
@@ -62,7 +62,7 @@ Trained on the OpenClaw agent harness framework (same lineage as Hermes). Thinks
 ### GLM 5.1 — "Context Recovery Champion"
 Excellent at complex coding (one-shotted a space shooter game that Opus 4.7 failed). Best-in-class context recovery after auto-compaction events — remembers the important stuff when other models forget. One-line fleet-wide model switch via `config.yml`.
 
-**Use for:** Complex coding, server fleet management, long sessions with compaction, default fleet orchestrator.
+**Use for:** Complex coding, server fleet management, long sessions with compaction, default fleet executor.
 
 ### Nemotron 3 Super — "Open-Weight Dev Specialist"
 Explicitly trained for coding agents, terminal use, and software engineering benchmarks. Open-weight — can be self-hosted, no API rate limits, no data privacy concerns. Stays on task across many tool calls without losing context.
@@ -76,8 +76,10 @@ Natively integrates a scalable RL framework. When paired with Hermes' Atropos RL
 
 **Use for:** RL self-improvement loops, agent training rollouts.
 
-### DeepSeek V3.2 — "Cron Reliability Specialist"
-Thinks *inside* tool calls — reasons while deciding which tool to invoke, self-corrects mid-execution. Eliminates redundant reasoning passes between steps. Ideal for Hermes cron scheduler (daily reports, news digests). Significantly lower cost due to eliminated redundancies.
+### DeepSeek V3.2 — "Cron Reliability Specialist" 💰
+Thinks *inside* tool calls — reasons while deciding which tool to invoke, self-corrects mid-execution. Eliminates redundant reasoning passes between steps. Ideal for Hermes cron scheduler (daily reports, news digests). Eliminates tool-call errors in automated runs.
+
+**Pricing:** $0.259/M input, $0.42/M output (OpenRouter) — cheapest executor by far.
 
 **Use for:** Cron jobs, daily automations, scheduled tasks, cost-optimized tool-heavy workflows.
 
@@ -138,8 +140,25 @@ M2.7 exists. No reason to use M2.5 anymore.
 | Role | Primary Pick | Budget Pick | Specialty Pick |
 |------|-------------|-------------|----------------|
 | Orchestrator | GPT-5.4 | Qwen 3.6 Plus | Kimi K2.5 (swarm), Gemini 3.1 Pro Preview (multimodal) |
-| Executor | GLM 5.1 | MiMo-V2-Pro (free) | DeepSeek V3.2 (cron), M2.7 (agentic-native) |
+| Executor | GLM 5.1 | DeepSeek V3.2 ($0.26/$0.42) | MiMo-V2-Pro ($1/$3), M2.7 (agentic-native) |
 | Auxiliary | Gemini 2.5 Flash (default) | Gemini 3 Flash Preview (search) | MiMo-V2-Flash (HTML only) |
+
+---
+
+## Hermes Routing Policy
+
+| Lane | Model | Role |
+|------|-------|------|
+| Architect / primary orchestrator | GPT-5.4 | Plans, reasons, decides |
+| Fallback orchestrator | Qwen 3.6 Plus (OpenRouter) | Takes over when 5.4 is unavailable or cost-optimized pass |
+| Long-horizon coding / execution / fleet | GLM-5.1 | Context recovery, complex coding |
+| Budget engineering / refactors | MiniMax-M2.7 | Agentic-native executor with a plan |
+| Cheap fast / triage / grunt work | MiMo-V2-Pro | Low-cost high volume |
+| Cron / scheduled automation | DeepSeek V3.2 | Thinks inside tool calls, cheapest executor |
+| Research / parallel sub-agents | Kimi K2.5 | Swarm agents, screenshot→UI |
+| Medium-cost general (narrow scope only) | GPT-5.4-mini | ⚠️ Cost trap — sub-agent roles only |
+| Marketing / messaging | GPT-5.4 | Quality writing |
+| Ideation deepening | MiniMax-M2.7 | Volume ideation |
 
 ---
 
@@ -161,10 +180,10 @@ Fleet-wide switch: edit 1-2 lines in `config.yml` and all agents update.
 2. **Chinese models dominate agentic roles** — Qwen, GLM, Kimi, MiMo, DeepSeek, MiniMax all outperform Western counterparts for specific roles, often at better value.
 3. **GPT-5.4 is the overall king** but expensive — pair with budget executors for cost efficiency.
 4. **Claude has regressed badly** — avoid for agentic workflows until further notice.
-5. **Context recovery matters** — GLM 5.1's post-compaction recovery is a real operational advantage.
+5. **Context recovery matters** — GLM-5.1's post-compaction recovery is a real operational advantage.
 6. **Tool-call reasoning matters** — DeepSeek V3.2's "think inside tool calls" eliminates cron errors.
-7. **Free options exist** — MiMo-V2-Pro (free for now), Trinity Large Preview Free (free on OpenRouter).
+7. **DeepSeek V3.2 is the cost king** — $0.259/$0.42 makes it the cheapest reliable executor on the market.
 
 ---
 
-*Sources: BoxminingAI "Top AI Models for Hermes Agent" (April 17, 2026), local fleet experience. Update quarterly or after major model releases.*
+*Sources: BoxminingAI "Top AI Models for Hermes Agent" (April 17, 2026), local fleet experience, OpenRouter pricing. Update quarterly or after major model releases.*
