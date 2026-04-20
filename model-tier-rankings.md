@@ -147,18 +147,21 @@ M2.7 exists. No reason to use M2.5 anymore.
 
 ## Hermes Routing Policy
 
-| Lane | Model | Role |
+|| Lane | Model | Role |
 |------|-------|------|
 | Architect / primary orchestrator | GPT-5.4 | Plans, reasons, decides |
-| Fallback orchestrator | Qwen 3.6 Plus (OpenRouter) | Takes over when 5.4 is unavailable or cost-optimized pass |
+| Fallback orchestrator | Qwen 3.6 Plus (OpenRouter, fallback-only) | Takes over when 5.4 is unavailable or cost-optimized pass |
 | Long-horizon coding / execution / fleet | GLM-5.1 | Context recovery, complex coding |
 | Budget engineering / refactors | MiniMax-M2.7 | Agentic-native executor with a plan |
 | Cheap fast / triage / grunt work | MiMo-V2-Pro | Low-cost high volume |
 | Cron / scheduled automation | DeepSeek V3.2 | Thinks inside tool calls, cheapest executor |
-| Research / parallel sub-agents | Kimi K2.5 | Swarm agents, screenshot→UI |
+| Research / parallel sub-agents | Kimi K2.5 (direct API) | Swarm agents, screenshot→UI |
+| Local / simple tasks | local-carnice (Carnice-9b) | Short queries, cheap local inference on localhost:8080 |
 | Medium-cost general (narrow scope only) | GPT-5.4-mini | ⚠️ Cost trap — sub-agent roles only |
 | Marketing / messaging | GPT-5.4 | Quality writing |
 | Ideation deepening | MiniMax-M2.7 | Volume ideation |
+
+> **OpenRouter is fallback-only.** All primary lanes use direct API subscriptions (Codex Max, Z.ai Max, KimiCode Moderato) or local inference. OpenRouter is used only when a primary provider is unavailable.
 
 ---
 

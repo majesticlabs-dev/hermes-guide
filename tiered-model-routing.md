@@ -1,6 +1,6 @@
 # Tiered Model Routing for Hermes
 
-How to run Hermes in delegate-first mode with a default GLM lane, GPT fallback, and named routing rules for GPT, GLM, and MiniMax models.
+How to run Hermes in delegate-first mode with a default GLM lane, GPT fallback, Kimi direct API for research, local-carnice for simple tasks, and named routing rules for all primary models. OpenRouter is fallback-only.
 
 ## What This Setup Does
 
@@ -38,6 +38,14 @@ So the actual pattern is:
   - `openai-codex / gpt-5.4`
 - Ideation deepening
   - `minimax / MiniMax-M2.7`
+- Research, parallel sub-agents, swarm tasks
+  - `kimi / kimi-k2.5` (direct API via KimiCode Moderato subscription)
+- Local / simple tasks (short queries, config lookups, triage)
+  - `local-carnice / Carnice-9b-Q6_K.gguf` (localhost:8080)
+- Cron / automation
+  - `deepseek / deepseek-v3.2` (OpenRouter as fallback only if DeepSeek unavailable)
+
+> **OpenRouter is fallback-only.** Do not route primary tasks through OpenRouter. Use it only when a direct API provider is down.
 
 ## Config Changes
 
@@ -45,8 +53,8 @@ These are the key config choices:
 
 ```yaml
 fallback_model:
-  provider: openai-codex
-  model: gpt-5.4
+  provider: openrouter
+  model: qwen/qwen3.6-plus
 
 agent:
   system_prompt: |-
@@ -62,6 +70,17 @@ delegation:
   reasoning_effort: high
 
 prefill_messages_file: ~/.hermes/prefill-orchestrator-routing.json
+
+smart_model_routing:
+  enabled: true
+  cheap_model:
+    provider: local-carnice
+    model: Carnice-9b-Q6_K.gguf
+
+custom_providers:
+- name: local-carnice
+  base_url: http://localhost:8080/v1
+  model: Carnice-9b-Q6_K.gguf
 ```
 
 Why:
@@ -108,6 +127,16 @@ hermes chat --provider minimax -m MiniMax-M2.7 -q "<task>"
 ### MiniMax M2.5 lane
 ```bash
 hermes chat --provider minimax -m MiniMax-M2.5 -q "<task>"
+```
+
+### Kimi K2.5 direct lane
+```bash
+hermes chat --provider kimi -m kimi-k2.5 -q "<task>"
+```
+
+### local-carnice lane
+```bash
+hermes chat --provider local-carnice -m Carnice-9b-Q6_K.gguf -q "<task>"
 ```
 
 For long jobs, run those in the background or inside `tmux`.

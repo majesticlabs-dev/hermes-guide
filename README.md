@@ -14,6 +14,7 @@ Practical guides for setting up and extending Hermes Agent.
 - [Message Queuing & Telegram Batching](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when a new message arrives while the agent is busy, plus Telegram-specific text and media batching windows that coalesce rapid messages.
 - [Fizzy Task Coordination](fizzy-task-coordination.md) — How Hermes integrates with Fizzy (fizzy.do) for agent-to-agent task coordination. Covers the Ruby CLI gem, board layout (inbox/doing/blocked/in_review/done/deferred), full card lifecycle, subagent handoff templates, session-start checks, and when to promote tasks to Fizzy vs keeping them on internal todo.
 - [Model Tier Rankings](model-tier-rankings.md) — Best LLM models for Hermes Agent by role (orchestrator, executor, auxiliary), based on community testing and fleet experience. Updated April 2026.
+- [Tiered Model Routing](tiered-model-routing.md) — How to configure delegate-first routing with GPT-5.4, GLM-5.1, Kimi direct, local-carnice, and MiniMax lanes. OpenRouter is fallback-only.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
 
 ## Operational Monitoring
