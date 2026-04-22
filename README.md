@@ -15,6 +15,7 @@ Practical guides for setting up and extending Hermes Agent.
 - [Fizzy Task Coordination](fizzy-task-coordination.md) — How Hermes integrates with Fizzy (fizzy.do) for agent-to-agent task coordination. Covers the Ruby CLI gem, board layout (inbox/doing/blocked/in_review/done/deferred), full card lifecycle, subagent handoff templates, session-start checks, and when to promote tasks to Fizzy vs keeping them on internal todo.
 - [Model Tier Rankings](model-tier-rankings.md) — Best LLM models for Hermes Agent by role (orchestrator, executor, auxiliary), based on community testing and fleet experience. Updated April 2026.
 - [Tiered Model Routing](tiered-model-routing.md) — How to configure delegate-first routing with GPT-5.4, GLM-5.1, Kimi direct, local-carnice, and MiniMax lanes. OpenRouter is fallback-only.
+- [PageIndex Evaluation](pageindex-evaluation.md) — Technical evaluation of VectifyAI/PageIndex, a reasoning-based RAG system (no vectors, no chunking). Covers architecture, quality signals, alternatives comparison, and recommended integration path with Hermes/KB.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
 
 ## Operational Monitoring
