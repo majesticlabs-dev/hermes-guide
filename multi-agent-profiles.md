@@ -280,6 +280,90 @@ your-project/
   AGENTS.md            <-- shared project context (all profiles read this)
 ```
 
+## Operator Layer: Keeping the Team Coherent Past Day 30
+
+Setup gets you to day one. The operator layer gets you to day thirty. Multi-profile teams degrade in predictable ways if you don't actively maintain boundaries, handoffs, and memory hygiene. Below is the minimum viable operator runbook.
+
+### Profiles Isolate More Than Tone
+
+A profile isn't just a personality swap — it walls off seven independent state dimensions:
+
+| Dimension | What breaks if shared |
+|-----------|----------------------|
+| configuration | Wrong model routing, incorrect provider keys |
+| sessions | Cross-contaminated conversation history |
+| memory | Research notes bleed into copy drafts |
+| skills | Writer accidentally runs deploy workflows |
+| personality | Role-specific tone and decision heuristics |
+| cron state | Scheduled jobs fire for the wrong profile |
+| gateway state | Messaging channels route to wrong agent |
+
+Specialization stays durable only when all seven remain separated. If you're seeing role bleed, check which dimension leaked — it's almost always memory or personality.
+
+### Handoff Contracts
+
+When one profile's output feeds another profile's input, write an explicit handoff contract. These live at:
+
+```
+~/.hermes/team/handoffs/<from>-to-<to>.md
+```
+
+Each contract contains four fields:
+
+1. **Input shape** — what the receiving profile expects (format, required fields, naming conventions)
+2. **Output shape** — what the sending profile must deliver
+3. **Failure action** — what happens when the contract is violated (reject and re-queue, escalate to orchestrator, halt)
+4. **Verification gate** — how the receiver confirms the handoff landed correctly (checksum, schema check, smoke test)
+
+Example: `writer-to-vpmktg.md` might specify that the writer delivers a draft in Markdown with H2 sections, the vpmktg profile validates that all H2s map to the campaign outline from SIGNALS.md, and on mismatch it escalates back to the writer with the specific missing sections.
+
+Contracts don't need to be long. A five-line markdown file is enough. The point is making the interface explicit so both profiles can be tested against it independently.
+
+### Weekly Memory-KPI Audit
+
+Once a week, check each profile's memory health. The key metric is **stale notes ratio**: notes that haven't been referenced or updated in 7+ days as a percentage of total notes.
+
+```
+hermes -p writer memory stats
+hermes -p vpmktg memory stats
+```
+
+Rules of thumb:
+
+- **Stale ratio under 15%** — healthy, no action needed.
+- **Stale ratio 15–30%** — schedule a `brain-resolve` pass on that profile to consolidate and prune.
+- **Stale ratio above 30%** — the profile is accumulating junk memory. Full audit: delete irrelevant notes, merge near-duplicates, archive anything older than 30 days that isn't actively referenced.
+
+This takes five minutes per profile and prevents the slow drift where an agent starts citing month-old context that's no longer accurate.
+
+### Policy Ceilings by Role
+
+Not every profile should have the same permissions. Define a risk class per profile and enforce it:
+
+| Risk Class | Profiles | Permissions |
+|------------|----------|-------------|
+| **safe** | Research, writing | Read-only outside their own output directories |
+| **review** | Building, debugging | Read repo, write feature branches, run sandboxed tests — no direct merges |
+| **critical** | Orchestrator only | Approve merges, widen permissions, authorize spend above budget |
+
+The orchestrator is the only profile that should touch production state, approve merges, or change shared configuration. This isn't about trust — it's about blast radius containment.
+
+### The Four Failure Modes
+
+These are the predictable ways a multi-profile setup degrades. Check for them monthly.
+
+**1. Profile drift** — SOUL.md edits accumulate over weeks, roles blur. The writer starts sounding like the marketing VP; the researcher starts giving strategic recommendations.
+- *Patch:* Diff each SOUL.md against its original intent weekly. If it's drifted more than ~20% from the original role definition, rewrite it.
+
+**2. Handoff rot** — Contracts exist on disk but aren't actually enforced. Agents start passing freeform text instead of the agreed format.
+- *Patch:* Wire handoff contract validation into the receiving profile's SOUL.md as a hard rule. If the input doesn't match the contract shape, reject it.
+
+**3. SOUL.md bloat** — Edge cases and one-off instructions accrete until the file is 800+ words and the agent has lost its original identity.
+- *Patch:* Cap SOUL.md at 400 words. If you need more, move procedural rules into a skill and reference material into shared context files.
+
+**4. Cron collision** — Scheduled tasks across profiles fire at the same time or compete for shared resources.
+- *Patch:* Maintain a shared `~/.hermes/team/cron-schedule.md` with staggered windows. No two profiles should run heavy jobs in the same 15-minute block.
+
 ## Practical Notes
 
 - **Cloning copies everything except state.** `--clone` gives you config.yaml, .env, and SOUL.md from the source profile. `--clone-all` copies sessions, memories, and logs too. Usually `--clone` is what you want — clean state, inherited config.
@@ -288,6 +372,12 @@ your-project/
 - **AGENTS.md is the shared brain.** Keep project-level knowledge in AGENTS.md, not in SOUL.md. SOUL.md is for identity, AGENTS.md is for context.
 - **Wrapper scripts are optional.** If you prefer, just use `hermes -p NAME` directly. The wrappers are convenience, not requirement.
 - **Memory is isolated.** Each profile has its own memories/ directory. The writer won't accidentally reference the marketing VP's session history. This is a feature, not a bug.
+- **Queue busy input by default.** When Hermes is busy processing a message, incoming messages are dropped by default. Flip this to queue instead so nothing gets lost — add to `config.yaml`:
+  ```yaml
+  display:
+    busy_input_mode: queue
+  ```
+  This is especially useful in multi-profile setups where orchestrator dispatches may arrive while a profile is mid-task.
 
 ## Verification
 
