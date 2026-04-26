@@ -372,7 +372,7 @@ These are the predictable ways a multi-profile setup degrades. Check for them mo
 - **AGENTS.md is the shared brain.** Keep project-level knowledge in AGENTS.md, not in SOUL.md. SOUL.md is for identity, AGENTS.md is for context.
 - **Wrapper scripts are optional.** If you prefer, just use `hermes -p NAME` directly. The wrappers are convenience, not requirement.
 - **Memory is isolated.** Each profile has its own memories/ directory. The writer won't accidentally reference the marketing VP's session history. This is a feature, not a bug.
-- **Queue busy input by default.** When Hermes is busy processing a message, incoming messages are dropped by default. Flip this to queue instead so nothing gets lost — add to `config.yaml`:
+- **Queue busy input by default.** When Hermes is busy processing a message, a normal new message interrupts the current run by default. Flip this to queue instead so in-flight work is not killed — add to `config.yaml`:
   ```yaml
   display:
     busy_input_mode: queue
