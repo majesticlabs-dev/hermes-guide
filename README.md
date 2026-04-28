@@ -2,6 +2,17 @@
 
 Practical guides for setting up and extending Hermes Agent.
 
+## Operator, Not Builder
+
+Hermes is not a Builder. Hermes is an Operator.
+
+- **Builders** create one-off artifacts: dashboards, static sites, prototypes, one-shot scripts.
+- **Operators** run recurring work: briefings, alerts, scheduled reports, monitoring, memory maintenance, skill execution, escalation handling.
+
+The pattern: a builder creates the surface, Hermes operates the workflow. Example: Claude builds a dashboard — Hermes runs daily analysis against it and sends the brief. Another agent writes a script — Hermes schedules it, monitors it, and escalates on failure.
+
+If the task is "make me a thing," route to a builder. If the task is "keep this running," "watch for this," or "tell me when," that's Hermes.
+
 ## Guides
 
 - [Telegram Mini App Setup](telegram-miniapp-setup.md) — Full walkthrough for deploying the Hermes Telegram Mini App with standalone proxy architecture (port 8643), Cloudflare Tunnel, Ed25519 auth, and the gateway API. Includes scorecard system documentation, operational scripts, and cron schedule.
