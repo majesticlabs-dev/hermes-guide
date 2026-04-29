@@ -1,6 +1,6 @@
 # Daily Personal-Context Questions
 
-A recurring Hermes pattern: one personal question per day, filed to durable memory on the next run. Over weeks, this daily drip captures small details users never think to volunteer — routines, coffee preference, spouse's name, old hobbies, places lived, sports fandom — building richer context than any one-shot intake interview.
+A recurring Hermes pattern: one personal question per day, filed to durable memory on the next run. Over weeks, this daily drip captures small details users never think to volunteer — routines, coffee preference, family context, old hobbies, places lived, sports fandom — building richer context than any one-shot intake interview.
 
 ---
 
@@ -66,7 +66,7 @@ Question quality examples:
 
 ### Model Choice
 
-A local model (e.g., `Carnice-9b`) or a cheap executor (DeepSeek V3.2) is sufficient for this task. It's simple read/file/write/ask work — no heavy reasoning needed.
+A local model (e.g., `Carnice-9b`) or the cheapest reliable local executor is sufficient for this task. It's simple read/file/write/ask work — no heavy reasoning needed.
 
 ---
 
@@ -81,9 +81,9 @@ After a few weeks of daily questions, the accumulated context typically includes
 - Places lived and traveled
 - Sports and entertainment fandom
 - Work style and communication preferences
-- Health and wellness notes
 - Home and living situation
-- Pet details, car, neighborhood trivia
+
+Topics like health, pets, car, or neighborhood details may come up organically but are boundary-dependent — the routine respects whatever the user volunteers.
 
 None of this comes from one big interview. It comes from showing up every day and asking one good question.
 
@@ -91,4 +91,4 @@ None of this comes from one big interview. It comes from showing up every day an
 
 ## Source
 
-Pattern captured from David's workflow, inspired by Peter Yang / @Shpigford's X post about personal-context AI routines. Live implementation: Telegram DM, 9 AM CDT, local `Carnice-9b` model, Hermes cron job id `d179e622b849`.
+Pattern captured from David's workflow, inspired by Peter Yang / @Shpigford's X post about personal-context AI routines.
