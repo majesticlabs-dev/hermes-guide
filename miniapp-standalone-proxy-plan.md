@@ -295,19 +295,19 @@ launchd service definition to run the proxy on port 8643 at login.
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/clawbot/.hermes/hermes-agent/venv/bin/python</string>
-        <string>/Users/clawbot/.hermes/miniapp-proxy/proxy.py</string>
+        <string>/Users/<user>/.hermes/hermes-agent/venv/bin/python</string>
+        <string>/Users/<user>/.hermes/miniapp-proxy/proxy.py</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/clawbot/.hermes/miniapp-proxy</string>
+    <string>/Users/<user>/.hermes/miniapp-proxy</string>
 
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
-        <string>/Users/clawbot/.hermes/hermes-agent/venv/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+        <string>/Users/<user>/.hermes/hermes-agent/venv/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
         <key>HERMES_HOME</key>
-        <string>/Users/clawbot/.hermes</string>
+        <string>/Users/<user>/.hermes</string>
     </dict>
 
     <key>RunAtLoad</key>
@@ -320,15 +320,15 @@ launchd service definition to run the proxy on port 8643 at login.
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/clawbot/.hermes/logs/miniapp-proxy.log</string>
+    <string>/Users/<user>/.hermes/logs/miniapp-proxy.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/clawbot/.hermes/logs/miniapp-proxy.error.log</string>
+    <string>/Users/<user>/.hermes/logs/miniapp-proxy.error.log</string>
 </dict>
 </plist>
 ```
 
-Uses the Hermes venv Python (`/Users/clawbot/.hermes/hermes-agent/venv/bin/python`) which already has aiohttp 3.13.5 and pynacl installed. No extra pip installs needed.
+Uses the Hermes venv Python (`/Users/<user>/.hermes/hermes-agent/venv/bin/python`) which already has aiohttp 3.13.5 and pynacl installed. No extra pip installs needed.
 
 ---
 
@@ -341,7 +341,7 @@ Change the tunnel target from 8642 (Hermes direct) to 8643 (proxy).
 **Before:**
 ```yaml
 tunnel: hermes
-credentials-file: /Users/clawbot/.cloudflared/353d6632-0c7a-437d-8ebf-9df2c8750d7d.json
+credentials-file: /Users/<user>/.cloudflared/<tunnel-id>.json
 
 ingress:
   - hostname: hs.majesticlabs.dev
@@ -352,7 +352,7 @@ ingress:
 **After:**
 ```yaml
 tunnel: hermes
-credentials-file: /Users/clawbot/.cloudflared/353d6632-0c7a-437d-8ebf-9df2c8750d7d.json
+credentials-file: /Users/<user>/.cloudflared/<tunnel-id>.json
 
 ingress:
   - hostname: hs.majesticlabs.dev

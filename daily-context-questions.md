@@ -91,4 +91,4 @@ None of this comes from one big interview. It comes from showing up every day an
 
 ## Source
 
-Pattern captured from David's workflow, inspired by Peter Yang / @Shpigford's X post about personal-context AI routines.
+Pattern captured from a production workflow, inspired by Peter Yang / @Shpigford's X post about personal-context AI routines.

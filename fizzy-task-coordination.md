@@ -177,7 +177,7 @@ fizzy comments create "DONE: Rate limiter live on staging. All tests passing. Re
 
 ### 5. Human reviews and closes
 
-The human (David, or whoever owns the board) reviews and either closes the card or sends it back:
+The human (or whoever owns the board) reviews and either closes the card or sends it back:
 
 ```bash
 fizzy cards close 47

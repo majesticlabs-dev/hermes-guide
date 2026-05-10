@@ -103,7 +103,7 @@ launchctl load ~/Library/LaunchAgents/ai.hermes.workspace.plist
 
 **Cause**: launchd PATH may not include pnpm or node. The plist uses the full mise path to pnpm.
 
-**Fix**: Check `workspace.error.log` in `~/.hermes/logs/`. If pnpm isn't found, update the `ProgramArguments` path in the plist to the absolute pnpm binary path (e.g., `/Users/clawbot/.local/share/mise/installs/pnpm/10.11.0/pnpm`).
+**Fix**: Check `workspace.error.log` in `~/.hermes/logs/`. If pnpm isn't found, update the `ProgramArguments` path in the plist to the absolute pnpm binary path (e.g., `/Users/<user>/.local/share/mise/installs/pnpm/<version>/pnpm`).
 
 ### Gateway not starting
 

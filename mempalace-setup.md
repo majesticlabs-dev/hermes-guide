@@ -1,6 +1,6 @@
 # MemPalace Setup for Hermes
 
-Installed and configured 2026-04-14 for David's Hermes setup on macOS Apple Silicon.
+Installed and configured 2026-04-14 for Hermes on macOS Apple Silicon.
 
 ## Installation
 
@@ -27,8 +27,8 @@ source ~/mempalace-venv/bin/activate
 # Init Hermes data directory (non-interactive)
 mempalace init --yes ~/.hermes
 
-# Init Obsidian knowledge base
-mempalace init --yes ~/Documents/kb
+# Init knowledge base
+mempalace init --yes ~/kb
 ```
 
 ## Data Ingested
@@ -55,8 +55,8 @@ Two wings created:
 # Mine Hermes project data (runs ~10-15 min for 4698 files)
 mempalace mine ~/.hermes --mode projects
 
-# Mine Obsidian KB (runs ~1-2 min for 491 files)
-mempalace mine ~/Documents/kb --mode projects
+# Mine knowledge base (runs ~1-2 min for 491 files)
+mempalace mine ~/kb --mode projects
 ```
 
 Total: 10,735 drawers indexed at setup time.
@@ -89,7 +89,7 @@ mempalace wake-up --wing kb
 ### Python API
 ```python
 import sys
-sys.path.insert(0, '/Users/clawbot/mempalace-venv/lib/python3.9/site-packages')
+sys.path.insert(0, os.path.expanduser('~/mempalace-venv/lib/python3.9/site-packages'))
 
 from mempalace.searcher import search_memories
 results = search_memories("hermes configuration", palace_path="~/.mempalace/palace")
@@ -117,8 +117,8 @@ mempalace status
 - Default palace path: `~/.mempalace/palace/`
 - Config: `~/.mempalace/config.json`
 - ChromaDB SQLite: `~/.mempalace/palace/chroma.sqlite3` (~70MB+)
-- Entity files: `~/.hermes/entities.json`, `~/Documents/kb/entities.json`
-- Wing configs: `~/.hermes/mempalace.yaml`, `~/Documents/kb/mempalace.yaml`
+- Entity files: `~/.hermes/entities.json`, `~/kb/entities.json`
+- Wing configs: `~/.hermes/mempalace.yaml`, `~/kb/mempalace.yaml`
 
 ## Useful Commands Reference
 
