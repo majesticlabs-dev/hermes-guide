@@ -29,6 +29,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 - [Tiered Model Routing](tiered-model-routing.md) — How to configure delegate-first routing with GPT-5.4, GLM-5.1, Kimi direct, local-carnice, and MiniMax lanes. OpenRouter is fallback-only.
 - [PageIndex Evaluation](pageindex-evaluation.md) — Technical evaluation of VectifyAI/PageIndex, a reasoning-based RAG system (no vectors, no chunking). Covers architecture, quality signals, alternatives comparison, and recommended integration path with Hermes/KB.
 - [Daily Personal-Context Questions](daily-context-questions.md) — A daily Hermes cron pattern that asks one thoughtful personal question per day, files the answer into durable memory, and accumulates rich user context over weeks. Includes setup recipe, prompt template, and model recommendations.
+- [Q100 Taste Interview](q100-taste-interview.md) — A 100-question structured extraction protocol for capturing writing voice, taste, aesthetic boundaries, and structural preferences. Includes 7 categories (beliefs, mechanics, aesthetic crimes, voice, structure, hard nos, red flags), hard rules, output profile schema, and usage patterns for single-session and drip modes.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
 
 ## Operational Monitoring
