@@ -8,8 +8,9 @@ It is inspired by [garrytan/gbrain](https://github.com/garrytan/gbrain), but the
 
 Use two homes:
 
-1. **Plugin source code:** the Hermes Agent plugin tree.
-   - Canonical location: `plugins/memory/gbrain/`
+1. **Plugin source code:** the Hermes Agent plugin tree or the standalone public plugin repo.
+   - Standalone repo: [majesticlabs-dev/hermes-gbrain-plugin](https://github.com/majesticlabs-dev/hermes-gbrain-plugin)
+   - Canonical bundled location: `plugins/memory/gbrain/`
    - Why: GBrain implements the Hermes `MemoryProvider` interface, uses Hermes plugin registration, adds the `gbrain_note` tool, and needs to be tested with Hermes' memory lifecycle.
    - Best long-term home: upstream Hermes Agent if the plugin is intended for all Hermes users.
 
@@ -17,7 +18,7 @@ Use two homes:
    - Canonical docs file: `gbrain-memory-plugin.md`
    - Why: the guide should explain when to use it, how to enable it, what it stores, and the operational tradeoffs.
 
-Do **not** host the plugin code only in this guide repo. A docs repo is the wrong home for executable Hermes provider code. If it needs to live outside Hermes core before upstreaming, use a standalone source repo such as `hermes-gbrain-plugin`, then document that install path here.
+Do **not** host the plugin code only in this guide repo. A docs repo is the wrong home for executable Hermes provider code. The current standalone public source repo is [majesticlabs-dev/hermes-gbrain-plugin](https://github.com/majesticlabs-dev/hermes-gbrain-plugin); this guide documents the install path and operating model.
 
 ## What it does
 
