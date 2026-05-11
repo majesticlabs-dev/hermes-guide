@@ -17,7 +17,7 @@ Telegram WebApp (index.html in Telegram's embedded browser)
     |  Authorization: Bearer *** (fallback for browser access)
     |
     v
-Cloudflare Tunnel (hs.majesticlabs.dev -- HTTPS)
+Cloudflare Tunnel (<your-domain> -- HTTPS)
     |
     v
 Mini App Proxy (localhost:8643)          <-- NEW SERVICE
@@ -344,7 +344,7 @@ tunnel: hermes
 credentials-file: /Users/<user>/.cloudflared/<tunnel-id>.json
 
 ingress:
-  - hostname: hs.majesticlabs.dev
+  - hostname: <your-domain>
     service: http://localhost:8642
   - service: http_status:404
 ```
@@ -355,7 +355,7 @@ tunnel: hermes
 credentials-file: /Users/<user>/.cloudflared/<tunnel-id>.json
 
 ingress:
-  - hostname: hs.majesticlabs.dev
+  - hostname: <your-domain>
     service: http://localhost:8643
   - service: http_status:404
 ```
@@ -434,7 +434,7 @@ curl -s -H "Authorization: Bearer $API_SERVER_KEY" http://127.0.0.1:8643/api/job
 # Expected: JSON (may be empty list)
 
 # 7. Through tunnel
-curl -s https://hs.majesticlabs.dev/miniapp/ | head -5
+curl -s https://<your-domain>/miniapp/ | head -5
 # Expected: HTML head of index.html
 
 # 8. Hermes gateway untouched

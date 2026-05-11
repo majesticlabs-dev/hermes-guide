@@ -18,7 +18,7 @@ Fizzy is a project management tool at [fizzy.do](https://fizzy.do) with a Ruby C
 gem install fizzy-cli
 ```
 
-Source: [github.com/dpaluy/fizzy-cli](https://github.com/dpaluy/fizzy-cli)
+Source: the Fizzy CLI repository provided by your Fizzy workspace.
 
 **Auth:** Token stored in 1Password. The CLI reads it from your 1Password vault at runtime. Make sure your 1Password CLI is unlocked before running fizzy commands.
 
@@ -311,7 +311,7 @@ fizzy comments create "Route added. Working on test." --card 52
 fizzy steps update step_def456 --card 52 --completed
 fizzy comments create "All done. Test passing. /health returns 200 unauthenticated." --card 52
 fizzy cards triage 52 --column in_review_col_id
-fizzy cards assign 52 david_user_id
+fizzy cards assign 52 HUMAN_USER_ID
 
 # 6. Human reviews at session start
 fizzy cards list --board b7k9x2 --column in_review_col_id --json

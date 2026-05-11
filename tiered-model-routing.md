@@ -188,8 +188,8 @@ You should see the delegate-first routing instructions under `agent.system_promp
 ## Files Touched in This Setup
 
 - `~/.hermes/config.yaml`
-- `~/Documents/hermes-guide/tiered-model-routing.md`
-- `~/Documents/hermes-guide/README.md`
+- `tiered-model-routing.md`
+- `README.md`
 
 ## Rollback
 
