@@ -14,12 +14,21 @@ command -v xurl
 
 xurl version
 # xurl 1.1.1
-
-xurl auth status
-# No apps registered. Use 'xurl auth apps add' to register one.
 ```
 
-So the binary is installed, but this machine does **not** currently have an authenticated `xurl` app configured.
+Authentication depends on which `HOME` Hermes is running with:
+
+- David's normal shell home (`HOME=/Users/clawbot`) has `hermes-majestic` authenticated as `dpaluy`.
+- The Atlas profile tool sandbox home (`HOME=/Users/clawbot/.hermes/profiles/atlas/home`) has no `xurl` apps registered.
+
+The working verification command from an Atlas/Hermes tool call is:
+
+```bash
+HOME=/Users/clawbot xurl auth status
+HOME=/Users/clawbot xurl whoami
+```
+
+Do not copy or read `~/.xurl` into the profile home from an agent session.
 
 ## Install
 
