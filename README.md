@@ -19,6 +19,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 - [Mini App Standalone Proxy Plan](miniapp-standalone-proxy-plan.md) — Detailed implementation plan for the standalone mini-app proxy on port 8643 that decouples mini-app support from Hermes core (survives updates).
 - [Cloudflare Tunnel](cloudflare-tunnel.md) — How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 - [1Password CLI](1password-cli.md) — Using 1Password with Hermes Agent for secure credential management.
+- [Python Environment with uv + venv](python-uv-venv.md) — How to run Hermes from a uv-managed virtualenv, fix `hermes doctor` warnings about global Python, and make shell `hermes` resolve to the venv.
 - [Extending the Gateway API](extending-gateway-api.md) — How to add new endpoints, middleware, and features to the Hermes API server.
 - [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts. Includes shared-context pattern (THESIS.md, SIGNALS.md, FEEDBACK-LOG.md) for cross-agent knowledge sharing, plus writer and vpmktg examples.
 - [SOUL.md Example](soul-md-example.md) — Public-safe templates for profile-level agent behavior: role, tone, tool rules, approval gates, quality bar, and the boundary between SOUL.md, AGENTS.md, memory, and skills.
