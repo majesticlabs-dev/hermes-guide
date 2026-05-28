@@ -1,6 +1,9 @@
-# Fizzy Task Coordination — Agent-to-Agent Task Board
+# Fizzy Task Coordination — DEPRECATED
 
-How Hermes integrates with Fizzy (fizzy.do) for multi-agent task coordination. This guide covers the CLI, the board layout, the lifecycle, and the coordination patterns that keep a fleet of agents and a human on the same page.
+> **⚠️ DEPRECATED — 2026-05-17: All task coordination has migrated to Hermes Kanban.**
+> Do **not** use Fizzy for new tasks. All boards, cards, and workflows should use the built-in `hermes kanban` command and the `kanban-orchestrator` skill. Fizzy cron jobs (`fizzy-hourly-dispatcher`, `fizzy-stale-task-sweeper`) are paused. This document is retained for historical reference only.
+
+How Hermes *used to* integrate with Fizzy (fizzy.do) for multi-agent task coordination. **Replaced by:** the `kanban-orchestrator` skill and `hermes kanban --help`.
 
 ---
 

@@ -28,7 +28,7 @@ $EDITOR ~/.hermes/profiles/operator/SOUL.md
 Run it:
 
 ```bash
-hermes -p operator "Check today's queued work and summarize blockers"
+hermes -p operator chat -q "Check today's queued work and summarize blockers"
 ```
 
 ## What belongs in SOUL.md

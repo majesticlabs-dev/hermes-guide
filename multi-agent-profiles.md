@@ -2,6 +2,8 @@
 
 How to run multiple specialized Hermes agents — each with its own personality, memory, and workspace — by cloning profiles, writing dedicated SOUL.md files, sharing AGENTS.md, and invoking them separately.
 
+For a full new-instance checklist covering install, memory, skills, gateway, cron, Kanban, and privacy checks, start with [`new-instance-operator-guide.md`](new-instance-operator-guide.md).
+
 ## Why Isolated Profiles Beat Context Stuffing
 
 The temptation is to cram everything into one agent: "You're a writer AND a VP of Marketing AND a debug engineer." That works for about five minutes, then the context gets muddy. The agent loses coherence because it's trying to hold contradictory mandates in one head.
@@ -70,10 +72,10 @@ This is where you put knowledge that's project-level, not agent-level. If you up
 
 There are two ways to invoke a specific profile:
 
-**Via the `-p` flag:**
+**Via the `-p` flag in one-shot mode:**
 ```bash
-hermes -p writer "Draft a blog post about our new API"
-hermes -p vpmktg "Write a pricing page headline for the enterprise tier"
+hermes -p writer chat -q "Draft a blog post about our new API"
+hermes -p vpmktg chat -q "Write a pricing page headline for the enterprise tier"
 ```
 
 **Via wrapper scripts** (created automatically during `profile create` unless `--no-alias` is used):
@@ -178,9 +180,9 @@ writer "Write a 2000-word deep dive on why context windows matter"
 # Generate campaign hooks with the marketing VP
 vpmktg "Brainstorm 30 campaign hooks for the product launch"
 
-# Or use the -p flag explicitly
-hermes -p writer "Edit this draft to be more punchy"
-hermes -p vpmktg "Give me three pricing page headline variants"
+# Or use the -p flag explicitly for one-shot runs
+hermes -p writer chat -q "Edit this draft to be more punchy"
+hermes -p vpmktg chat -q "Give me three pricing page headline variants"
 ```
 
 Both profiles share the same AGENTS.md at the project level, so they both understand the product, API, and codebase. But they bring different personalities and expertise to the conversation.
@@ -233,7 +235,7 @@ That's it. Six lines of instruction plus a blank separator. Both the writer and 
 When you move shared knowledge into the shared-context directory, check whether any skills are now redundant. In our setup, the `style-writer` skill duplicated conventions that THESIS.md and FEEDBACK-LOG.md now cover. We deleted it:
 
 ```bash
-hermes skill delete style-writer
+hermes skills uninstall style-writer
 ```
 
 The rule: if a skill's entire purpose is now handled by a shared-context file, kill the skill. SOUL.md + shared-context should be enough for style and convention rules. Skills should handle procedural workflows (how to deploy, how to run tests), not static reference material.

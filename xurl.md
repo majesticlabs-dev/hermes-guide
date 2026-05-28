@@ -2,9 +2,9 @@
 
 `xurl` is the official X Developer Platform CLI for authenticated X API requests. Use it when Hermes needs real X API operations: reading posts, searching, timelines, mentions, bookmarks, likes, follows, DMs, media uploads, webhooks, or raw `/2/...` API calls.
 
-For David's normal X URL/article capture workflow, prefer the `grok` profile first. Use `xurl` when the task explicitly needs X API behavior or when API access/cost is intentional.
+For normal X URL/article capture workflows, prefer an X-native reader/specialist profile first. Use `xurl` when the task explicitly needs X API behavior or when API access/cost is intentional.
 
-## Current local status
+## Current local status template
 
 Verified locally on 2026-05-21:
 
@@ -18,14 +18,14 @@ xurl version
 
 Authentication depends on which `HOME` Hermes is running with:
 
-- David's normal shell home (`HOME=/Users/clawbot`) has `hermes-majestic` authenticated as `dpaluy`.
-- The Atlas profile tool sandbox home (`HOME=/Users/clawbot/.hermes/profiles/atlas/home`) has no `xurl` apps registered.
+- The normal shell home may have one set of `xurl` apps and authenticated users.
+- A Hermes profile sandbox home may have no `xurl` apps registered.
 
-The working verification command from an Atlas/Hermes tool call is:
+If a Hermes tool call runs with a sandboxed home, pass the intended home explicitly only after confirming that this does not expose private credentials:
 
 ```bash
-HOME=/Users/clawbot xurl auth status
-HOME=/Users/clawbot xurl whoami
+HOME=~ xurl auth status
+HOME=~ xurl whoami
 ```
 
 Do not copy or read `~/.xurl` into the profile home from an agent session.

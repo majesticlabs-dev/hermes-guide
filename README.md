@@ -13,26 +13,36 @@ The pattern: a builder creates the surface, Hermes operates the workflow. Exampl
 
 If the task is "make me a thing," route to a builder. If the task is "keep this running," "watch for this," or "tell me when," that's Hermes.
 
-## Guides
+## Start Here
 
-- [Telegram Mini App Setup](telegram-miniapp-setup.md) — Full walkthrough for deploying the Hermes Telegram Mini App with standalone proxy architecture (port 8643), Cloudflare Tunnel, Ed25519 auth, and the gateway API. Includes scorecard system documentation, operational scripts, and cron schedule.
-- [Mini App Standalone Proxy Plan](miniapp-standalone-proxy-plan.md) — Detailed implementation plan for the standalone mini-app proxy on port 8643 that decouples mini-app support from Hermes core (survives updates).
+- [New Hermes Instance Operator Guide](new-instance-operator-guide.md) — The canonical setup sequence for a fresh Hermes instance or profile: install, model/provider config, toolsets, skills/proficiencies, memory, profile setup, gateway, cron, Kanban, verification, and privacy rules.
+- [SOUL.md Example](soul-md-example.md) — Public-safe templates for profile-level agent behavior: role, tone, tool rules, approval gates, quality bar, and the boundary between SOUL.md, AGENTS.md, memory, and skills.
+- [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts.
+- [GBrain Memory Plugin](gbrain-memory-plugin.md) — Local-first SQLite/FTS5 memory provider for Hermes with deterministic entity extraction, graph-style note linking, the `gbrain_note` tool, setup commands, privacy notes, test checklist, and hosting recommendation.
+- [Installing Skills from a URL](installing-skills-from-url.md) — How to install a Hermes skill directly from any `.md` URL, including Gists and raw hosted skill files, then refresh it later with `hermes skills update`.
+
+## Operations Guides
+
+- [Workspace Auto-Start & Auth](workspace-autostart.md) — How Hermes Workspace auto-starts via launchd after reboot, the gateway/workspace plist arrangement, and the HERMES_API_TOKEN wiring needed to make `/jobs` and other authenticated endpoints work.
+- [Message Queuing & Telegram Batching](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when a new message arrives while the agent is busy, plus Telegram-specific text and media batching windows that coalesce rapid messages.
 - [Cloudflare Tunnel](cloudflare-tunnel.md) — How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 - [1Password CLI](1password-cli.md) — Using 1Password with Hermes Agent for secure credential management.
 - [Python Environment with uv + venv](python-uv-venv.md) — How to run Hermes from a uv-managed virtualenv, fix `hermes doctor` warnings about global Python, and make shell `hermes` resolve to the venv.
+- [Telegram Mini App Setup](telegram-miniapp-setup.md) — Full walkthrough for deploying the Hermes Telegram Mini App with standalone proxy architecture, Cloudflare Tunnel, auth, and the gateway API.
+- [Mini App Standalone Proxy Plan](miniapp-standalone-proxy-plan.md) — Detailed implementation plan for a standalone mini-app proxy that decouples mini-app support from Hermes core.
 - [Extending the Gateway API](extending-gateway-api.md) — How to add new endpoints, middleware, and features to the Hermes API server.
-- [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts. Includes shared-context pattern (THESIS.md, SIGNALS.md, FEEDBACK-LOG.md) for cross-agent knowledge sharing, plus writer and vpmktg examples.
-- [SOUL.md Example](soul-md-example.md) — Public-safe templates for profile-level agent behavior: role, tone, tool rules, approval gates, quality bar, and the boundary between SOUL.md, AGENTS.md, memory, and skills.
-- [Workspace Auto-Start & Auth](workspace-autostart.md) — How Hermes Workspace auto-starts via launchd after reboot, the gateway/workspace plist arrangement, and the HERMES_API_TOKEN wiring needed to make /jobs and other authenticated endpoints work.
-- [Message Queuing & Telegram Batching](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when a new message arrives while the agent is busy, plus Telegram-specific text and media batching windows that coalesce rapid messages.
-- [Fizzy Task Coordination](fizzy-task-coordination.md) — How Hermes integrates with Fizzy (fizzy.do) for agent-to-agent task coordination. Covers the Ruby CLI gem, board layout (inbox/doing/blocked/in_review/done/deferred), full card lifecycle, subagent handoff templates, session-start checks, and when to promote tasks to Fizzy vs keeping them on internal todo.
-- [Installing Skills from a URL](installing-skills-from-url.md) — How to install a Hermes skill directly from any `.md` URL, including Gists and raw hosted skill files, then refresh it later with `hermes skills update`.
-- [Model Tier Rankings](model-tier-rankings.md) — Best LLM models for Hermes Agent by role (orchestrator, executor, auxiliary), based on community testing and fleet experience. Updated April 2026.
-- [Tiered Model Routing](tiered-model-routing.md) — How to configure delegate-first routing with GPT-5.4, GLM-5.1, Kimi direct, local-carnice, and MiniMax lanes. OpenRouter is fallback-only.
-- [PageIndex Evaluation](pageindex-evaluation.md) — Technical evaluation of VectifyAI/PageIndex, a reasoning-based RAG system (no vectors, no chunking). Covers architecture, quality signals, alternatives comparison, and recommended integration path with Hermes/KB.
-- [Daily Personal-Context Questions](daily-context-questions.md) — A daily Hermes cron pattern that asks one thoughtful personal question per day, files the answer into durable memory, and accumulates rich user context over weeks. Includes setup recipe, prompt template, and model recommendations.
-- [Q100 Taste Interview](q100-taste-interview.md) — A 100-question structured extraction protocol for capturing writing voice, taste, aesthetic boundaries, and structural preferences. Includes 7 categories (beliefs, mechanics, aesthetic crimes, voice, structure, hard nos, red flags), hard rules, output profile schema, and usage patterns for single-session and drip modes.
-- [GBrain Memory Plugin](gbrain-memory-plugin.md) — Local-first SQLite/FTS5 memory provider for Hermes with deterministic entity extraction, graph-style note linking, the `gbrain_note` tool, setup commands, privacy notes, test checklist, and hosting recommendation.
+
+## Routing, Models, and Coordination
+
+- [Model Tier Rankings](model-tier-rankings.md) — Best LLM models for Hermes Agent by role (orchestrator, executor, auxiliary), based on community testing and fleet experience.
+- [Tiered Model Routing](tiered-model-routing.md) — How to configure delegate-first routing with high-reasoning, budget, specialist, local, and fallback lanes.
+- [Fizzy Task Coordination](fizzy-task-coordination.md) — **DEPRECATED.** Retained for historical reference only. All task coordination now uses **Hermes Kanban** (`hermes kanban`). See the `kanban-orchestrator` skill and `hermes kanban --help` for current workflows.
+
+## Research, Memory, and Context Extraction
+
+- [Daily Personal-Context Questions](daily-context-questions.md) — A daily Hermes cron pattern that asks one thoughtful personal question per day, files the answer into durable memory, and accumulates rich user context over weeks.
+- [Q100 Taste Interview](q100-taste-interview.md) — A 100-question structured extraction protocol for capturing writing voice, taste, aesthetic boundaries, and structural preferences.
+- [PageIndex Evaluation](pageindex-evaluation.md) — Technical evaluation of VectifyAI/PageIndex, a reasoning-based RAG system with architecture notes and integration tradeoffs.
 - [xurl — X API CLI for Hermes](xurl.md) — How to install, authenticate, configure apps/users/redirects/auth modes, safely verify, and use the official X Developer Platform CLI from Hermes.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
 

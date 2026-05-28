@@ -87,9 +87,9 @@ Add these to `~/.hermes/.env`:
 
 ```bash
 # Required
-TELEGRAM_BOT_TOKEN=your_bot_token_here
-TELEGRAM_OWNER_ID=your_numeric_user_id
-TELEGRAM_ALLOWED_USERS=your_numeric_user_id
+TELEGRAM_BOT_TOKEN=[REDACTED]
+TELEGRAM_OWNER_ID=<numeric-user-id>
+TELEGRAM_ALLOWED_USERS=<numeric-user-id>
 API_SERVER_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
 
 # CRITICAL — without this, the mini app gets 403 on every request
