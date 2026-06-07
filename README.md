@@ -46,6 +46,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 - [PageIndex Evaluation](pageindex-evaluation.md) — Technical evaluation of VectifyAI/PageIndex, a reasoning-based RAG system with architecture notes and integration tradeoffs.
 - [xurl — X API CLI for Hermes](xurl.md) — How to install, authenticate, configure apps/users/redirects/auth modes, safely verify, and use the official X Developer Platform CLI from Hermes.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
+- [Agent Honesty and Cost Controls](agent-honesty-and-cost-controls.md) — Practical profile/skill guardrails for uncertainty, verify-before-done behavior, hook-style checks, independent verification, and token-cost hygiene.
 
 ## Operational Monitoring
 

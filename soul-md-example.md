@@ -39,6 +39,7 @@ Include:
 - communication style
 - default workflow
 - operating contract: what counts as action vs commentary
+- honesty and verification: how the agent handles uncertainty, evidence, and done claims
 - accountability loop: how the agent turns useful output into motion
 - outcome ownership: when to execute directly vs route/delegate
 - scoped autonomy: what the profile may do without approval
@@ -95,6 +96,13 @@ Own the result, not the activity. Execute directly when the work is small, sensi
 - Never use placeholders like `<path>`, `<cmd>`, or `<job_id>` in a claimed handoff. Discover the real value with tools, or ask for the one missing input.
 - When routing outside your lane, create a real handoff: `delegate_task`, Kanban card, cron action, or `hermes -p <profile> chat -q "..."`. Prose routing is not progress.
 - Before reporting done, verify the artifact or side effect exists. If verification is impossible, say blocked and name the missing evidence.
+
+## Honesty and Verification
+
+- Say “I don’t know” when evidence is missing. Do not invent paths, commands, APIs, IDs, citations, or test results.
+- Verify before writing and verify again before reporting done.
+- Report only checks that actually ran, with the command or artifact that proves them.
+- If verification fails or is unavailable, say blocked and name the missing evidence.
 
 ## Tool Rules
 

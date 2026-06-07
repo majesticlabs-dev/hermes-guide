@@ -114,6 +114,37 @@ Each gate catches a class of error that would otherwise propagate. The agent tha
 
 ---
 
+## 10. Honesty Rules Beat Helpful-Sounding Fabrication
+
+Agents need explicit permission to say “I don’t know.” Without it, they tend to invent paths, commands, APIs, citations, or test results because confident completion looks helpful.
+
+Every serious profile or skill should encode the rule directly:
+
+- Say uncertainty plainly when evidence is missing.
+- Do not invent artifact IDs, file paths, citations, or command results.
+- Verify before writing and before claiming done.
+- If verification fails, report the blocker instead of smoothing over it.
+
+For high-risk claims, use an independent verifier or review profile. A worker summary is not evidence.
+
+---
+
+## 11. Token Waste Starts in Tool Output
+
+Most agent cost waste is not the user’s question. It is oversized context: full logs, broad file dumps, giant database results, repeated source snippets, and irrelevant tool output.
+
+Apply cheap controls before installing another routing layer:
+
+- Search/read targeted ranges instead of dumping whole files.
+- Summarize or filter tool output before feeding it back to the model.
+- Use budget models for bounded extraction and triage.
+- Keep profile skills role-specific so every session does not load a kitchen sink.
+- Evaluate compression proxies with small benchmarks before wiring them into live Hermes routing.
+
+Compression tools can be useful, but only after they prove they preserve facts and reduce total cost in the actual workflow.
+
+---
+
 ## The Meta-Lesson
 
 All of these lessons came from running the scorecard honestly and reviewing what went wrong. The scorecard didn't create these insights — the data did. The scorecard just made sure the data was collected and reviewed regularly.
