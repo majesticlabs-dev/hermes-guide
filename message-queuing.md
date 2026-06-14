@@ -1,6 +1,6 @@
-# Message Queuing & Telegram Batching
+# Message Queuing, Telegram Batching & Rich Messages
 
-How Hermes handles incoming messages when the agent is already busy, and how Telegram batches rapid messages to avoid accidental interrupts.
+How Hermes handles incoming messages when the agent is already busy, how Telegram batches rapid messages to avoid accidental interrupts, and how to enable Telegram-native rich rendering.
 
 ---
 
@@ -98,6 +98,47 @@ The combination means:
 
 ---
 
+## Telegram Rich Messages
+
+Telegram rich messages let Hermes send final replies through Telegram's native `sendRichMessage` path instead of flattening markdown. This preserves useful operator formats such as headings, tables, task lists, and collapsible `<details>` sections.
+
+Enable it per Hermes profile in that profile's `config.yaml`:
+
+```yaml
+telegram:
+  extra:
+    rich_messages: true
+```
+
+For the default profile, edit `~/.hermes/config.yaml`. For named profiles, edit `~/.hermes/profiles/<profile>/config.yaml`.
+
+After changing a running profile, restart that profile's gateway:
+
+```bash
+hermes gateway restart
+hermes -p librarian gateway restart
+hermes -p steph gateway restart
+```
+
+### Rich Message Test Prompt
+
+Send this through Telegram after restart:
+
+```text
+Summarize this as a Telegram rich table with columns: Task, Owner, Status.
+Give me a checklist for the deployment, using completed and incomplete task boxes.
+Format this as:
+- heading
+- short summary
+- table
+- checklist
+- collapsible details section for risks
+```
+
+Expected result: Telegram renders the table, checklist, and collapsible risks section natively. If a Telegram client renders rich messages poorly, roll back by setting `telegram.extra.rich_messages: false` and restarting the affected gateway.
+
+---
+
 ## Verification
 
 ```bash
@@ -107,7 +148,22 @@ grep busy_input_mode ~/.hermes/config.yaml
 # Check env vars for batch timing
 grep -i batch ~/.hermes/.env
 
+# Check rich message config across default + named profiles
+python3 - <<'PY'
+import yaml
+from pathlib import Path
+root = Path.home() / '.hermes'
+configs = [root / 'config.yaml'] + sorted((root / 'profiles').glob('*/config.yaml'))
+for cfg in configs:
+    if cfg.exists():
+        profile = 'default' if cfg.parent == root else cfg.parent.name
+        data = yaml.safe_load(cfg.read_text()) or {}
+        enabled = data.get('telegram', {}).get('extra', {}).get('rich_messages')
+        print(f'{profile}: {enabled}')
+PY
+
 # Test: send 3 quick messages via Telegram, verify they're merged into one agent turn
+# Test rich messages: send the rich message test prompt above and verify Telegram renders the table/checklist/details natively
 ```
 
 ---
@@ -116,5 +172,6 @@ grep -i batch ~/.hermes/.env
 
 | File | Purpose |
 |------|---------|
-| `~/.hermes/config.yaml` | `display.busy_input_mode` setting |
+| `~/.hermes/config.yaml` | `display.busy_input_mode` and default-profile `telegram.extra.rich_messages` settings |
+| `~/.hermes/profiles/<profile>/config.yaml` | Named-profile `telegram.extra.rich_messages` setting |
 | `~/.hermes/.env` | `HERMES_TELEGRAM_TEXT_BATCH_DELAY_SECONDS`, `HERMES_TELEGRAM_TEXT_BATCH_SPLIT_DELAY_SECONDS`, `HERMES_TELEGRAM_MEDIA_BATCH_DELAY_SECONDS` |

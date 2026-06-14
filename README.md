@@ -25,7 +25,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 ## Operations Guides
 
 - [Workspace Auto-Start & Auth](workspace-autostart.md) — How Hermes Workspace auto-starts via launchd after reboot, the gateway/workspace plist arrangement, and the HERMES_API_TOKEN wiring needed to make `/jobs` and other authenticated endpoints work.
-- [Message Queuing & Telegram Batching](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when a new message arrives while the agent is busy, plus Telegram-specific text and media batching windows that coalesce rapid messages.
+- [Message Queuing, Telegram Batching & Rich Messages](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when the agent is busy, plus Telegram-specific text/media batching and native rich-message rendering.
 - [Cloudflare Tunnel](cloudflare-tunnel.md) — How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 - [1Password CLI](1password-cli.md) — Using 1Password with Hermes Agent for secure credential management.
 - [Python Environment with uv + venv](python-uv-venv.md) — How to run Hermes from a uv-managed virtualenv, fix `hermes doctor` warnings about global Python, and make shell `hermes` resolve to the venv.
