@@ -33,6 +33,17 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 - [Mini App Standalone Proxy Plan](miniapp-standalone-proxy-plan.md) — Detailed implementation plan for a standalone mini-app proxy that decouples mini-app support from Hermes core.
 - [Extending the Gateway API](extending-gateway-api.md) — How to add new endpoints, middleware, and features to the Hermes API server.
 
+## Daily Operator Surfaces
+
+These are worth checking on any serious Hermes setup because they change daily operation, not just setup polish:
+
+- **Context-compression indicator** — watch compression count as a session-length signal; compression keeps work moving but repeated compression means you may need to split or persist context.
+- **`/browser connect` / browser automation** — use it when logged-in browser state or real UI interaction matters; prefer deterministic readers/scripts for repeatable extraction when available.
+- **Web Dashboard** — use it for administration surfaces like config, sessions, logs, credentials, cron jobs, skills, gateway, webhooks, and memory.
+- **Desktop App** — use the native app when a visual/operator workspace is better than pure CLI or chat, especially for streaming tool output, files, profiles, cron, skills, settings, and voice.
+
+Official docs: [Browser Automation](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser), [Web Dashboard](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-dashboard), [Desktop App](https://hermes-agent.nousresearch.com/docs/user-guide/desktop), [Context Compression](https://hermes-agent.nousresearch.com/docs/developer-guide/context-compression-and-caching).
+
 ## Routing, Models, and Coordination
 
 - [Model Tier Rankings](model-tier-rankings.md) — Best LLM models for Hermes Agent by role (orchestrator, executor, auxiliary), based on community testing and fleet experience.
