@@ -60,6 +60,7 @@ Official docs: [Browser Automation](https://hermes-agent.nousresearch.com/docs/u
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
 - [Agent Honesty and Cost Controls](agent-honesty-and-cost-controls.md) — Practical profile/skill guardrails for uncertainty, verify-before-done behavior, hook-style checks, independent verification, and token-cost hygiene.
 - [Agent-Native Toolbelt Implementation Plan](agent-native-toolbelt-plan.md) — Plan for converting repeated agent workflows into deterministic CLIs with local mirrors, budget guardrails, Hermes skills, and compound commands.
+- [Signal-to-Skill Report](signal-to-skill-report.md) — Weekly loop for scanning Hermes tool-use patterns, ranking Top 5 reusable workflow candidates, applying them as skills, and verifying the result.
 
 ## Operational Monitoring
 
