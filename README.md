@@ -22,6 +22,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 - [Hermes Dreaming Plugin](hermes-dreaming-plugin.md) — Background memory consolidation for Hermes, including `hermes plugins install alejandroiglesias/hermes-dreaming`, review/run commands, audit files, and safety notes for memory-mutating workflows.
 - [Installing Skills from a URL](installing-skills-from-url.md) — How to install a Hermes skill directly from any `.md` URL, including Gists and raw hosted skill files, then refresh it later with `hermes skills update`.
 - [Recommended Skills to Install](skills-to-install.md) — Profile-specific list of external/community skills worth adding, including `last30days` and its target profiles.
+- [Skill Bundles](skill-bundles.md) — How to group repeatable skill clusters into one slash command with `hermes bundles create`.
 
 ## Operations Guides
 
