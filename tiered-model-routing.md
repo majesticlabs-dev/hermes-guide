@@ -1,196 +1,125 @@
 # Tiered Model Routing for Hermes
 
-How to run Hermes in delegate-first mode with a default GLM lane, GPT fallback, Kimi direct API for research, local-carnice for simple tasks, and named routing rules for all primary models. OpenRouter is fallback-only.
+Use tiered routing when one Hermes profile needs to coordinate work across models with different cost, context, and reliability tradeoffs.
 
-## What This Setup Does
+Important constraint: Hermes currently has one global `delegation` block per profile. `delegate_task` does not accept a per-task provider/model override. True tiering requires either:
 
-This setup bakes in three things:
+1. the profile's default `delegation` lane,
+2. explicit child Hermes/Pi processes with verified `--provider` and `-m` model IDs, or
+3. separate specialist profiles with their own configs.
 
-1. The top-level Hermes agent behaves like an orchestrator instead of trying to do all the work itself.
-2. The default delegated lane is `zai / glm-5.1`.
-3. If a delegated task fails, stalls, or turns into backend / infra / terminal-heavy work, the preferred fallback lane is `openai-codex / gpt-5.4`.
+Do not pretend a lane exists just because it is named in prose. Smoke-test the exact provider/model path first.
 
-Important: Hermes does not have first-class Tier 1 / Tier 2 / Tier 3 routing in `config.yaml`. There is only one global `delegation` block.
+## Current Routing Pattern
 
-So the actual pattern is:
-- use `delegation` for the default lane
-- use `agent.system_prompt` to tell the orchestrator how to choose lanes
-- spawn explicit child Hermes processes with `--provider` and `-m` when you need a specific tier
+| Lane | Example model/provider | Use when | Notes |
+|---|---|---|---|
+| Deterministic/no-agent | script-only cron/job | check-ins, backups, watchdogs, exact fixed messages | Best cost is no LLM. |
+| Trivial / low-stakes | Kimi K2.7 when available; verified local examples may be Kimi K2.6 / Kimi-for-coding | formatting, simple edits, extraction, boilerplate, cheap motion | Verify exact Kimi model ID before configuring. |
+| High-context / high-IQ leverage | `zai / glm-5.2` | repo-scale context, second review, agentic coding, frontend/design, long-context synthesis | Good default delegation lane when leverage matters. |
+| Premium fallback | `openai-codex / gpt-5.5` | hard failures, production/security risk, final arbitration | Keep scarce; don't use as first reflex. |
+| Social/X signal | Grok / xAI profile | social scans, buyer language, X intelligence | Keep social work in the social profile/lane. |
 
-## Current Routing Policy
-
-### Default / unclear task
-- Primary: `zai / glm-5.1`
-- Fallback: `openai-codex / gpt-5.4`
-
-### Clear task routing
-- Backend, debugging, infrastructure, terminal-heavy work, incident response
-  - `openai-codex / gpt-5.4`
-- Hard general coding, long-horizon agentic work, product shaping
-  - `zai / glm-5.1`
-- Serious budget engineering, repo-wide refactors
-  - `minimax / MiniMax-M2.7`
-- Medium-cost general implementation
-  - `openai-codex / gpt-5.4-mini`
-- Cheap fast execution, triage, repetitive grunt work, first-pass ideation
-  - `minimax / MiniMax-M2.5`
-- Marketing and messaging
-  - `openai-codex / gpt-5.4`
-- Ideation deepening
-  - `minimax / MiniMax-M2.7`
-- Research, parallel sub-agents, swarm tasks
-  - `kimi / kimi-k2.5` (direct API via KimiCode Moderato subscription)
-- Local / simple tasks (short queries, config lookups, triage)
-  - `local-carnice / Carnice-9b-Q6_K.gguf` (localhost:8080)
-- Cron / automation
-  - `deepseek / deepseek-v3.2` (OpenRouter as fallback only if DeepSeek unavailable)
-
-> **OpenRouter is fallback-only.** Do not route primary tasks through OpenRouter. Use it only when a direct API provider is down.
-
-## Config Changes
-
-These are the key config choices:
+## Recommended Default Shape
 
 ```yaml
-fallback_model:
-  provider: openrouter
-  model: qwen/qwen3.6-plus
-
-agent:
-  system_prompt: |-
-    You are the Hermes orchestrator. Your default behavior is triage, route, delegate, review, and synthesize.
-    Do not do substantive task execution yourself unless delegation is impossible or obviously unnecessary.
-    Prefer delegate_task for the default lane, and when a specific tier is required,
-    spawn a child Hermes process with explicit --provider and -m flags.
-    ...
-
 delegation:
   provider: zai
-  model: glm-5.1
+  model: glm-5.2
   reasoning_effort: high
-
-prefill_messages_file: ~/.hermes/prefill-orchestrator-routing.json
-
-smart_model_routing:
-  enabled: true
-  cheap_model:
-    provider: local-carnice
-    model: Carnice-9b-Q6_K.gguf
-
-custom_providers:
-- name: local-carnice
-  base_url: http://localhost:8080/v1
-  model: Carnice-9b-Q6_K.gguf
 ```
 
 Why:
-- `delegation` fixes the broken default child lane and makes GLM-5.1 the first-choice delegated model.
-- `fallback_model` gives a clean GPT-5.4 escape hatch.
-- `agent.system_prompt` teaches the orchestrator which lane to pick.
-- `prefill_messages_file` adds few-shot routing examples that bias the main model toward delegation-first behavior without changing Hermes source code.
 
-## Why Not Put Every Tier in Config?
+- GLM-5.2 gives a large context window and strong reasoning at lower cost than premium fallback models.
+- It is good for delegation where context depth, repo understanding, or second-review quality matters.
+- Trivial work should be routed away from GLM-5.2 rather than weakening the GLM lane.
 
-Because Hermes cannot do that natively.
+## Explicit Child Process Pattern
 
-`delegate_task` does not expose a per-call `provider` + `model` override. The global `delegation` block is the only built-in model override for subagents.
+Use a spawned Hermes process when you need a specific non-default lane.
 
-That means there are two practical ways to get true tiers:
+### GLM-5.2 leverage lane
 
-1. Default lane via `delegate_task`
-2. Explicit child processes for model-specific lanes
-
-## Child Process Pattern for Specific Tiers
-
-Use the Hermes CLI itself from the terminal tool when you need a non-default lane.
-
-### GPT-5.4 lane
 ```bash
-hermes chat --provider openai-codex -m gpt-5.4 -q "<task>"
+hermes chat --provider zai -m glm-5.2 -q "<task>"
 ```
 
-### GPT-5.4-mini lane
+### GPT-5.5 premium fallback lane
+
 ```bash
-hermes chat --provider openai-codex -m gpt-5.4-mini -q "<task>"
+hermes chat --provider openai-codex -m gpt-5.5 -q "<task>"
 ```
 
-### GLM-5.1 lane
+### Kimi trivial/front-end lane
+
+Use the exact direct provider/model ID that your runtime lists. Example shape only:
+
 ```bash
-hermes chat --provider zai -m glm-5.1 -q "<task>"
+hermes chat --provider kimi-coding -m kimi-k2.6 -q "<task>"
 ```
 
-### MiniMax M2.7 lane
+If you expect Kimi K2.7, verify it first:
+
 ```bash
-hermes chat --provider minimax -m MiniMax-M2.7 -q "<task>"
+set -a
+[ -f "$HOME/.hermes/.env" ] && . "$HOME/.hermes/.env"
+set +a
+pi --list-models kimi
 ```
 
-### MiniMax M2.5 lane
+Do not substitute a paid OpenRouter Kimi route unless the user explicitly approved OpenRouter for that run.
+
+## Routing Rules
+
+1. **No-agent first** for deterministic recurring work.
+2. **Kimi for cheap motion** once the exact Kimi lane is verified.
+3. **GLM-5.2 for leverage**: large context, repo-scale reasoning, agentic coding, second review, design/frontend generation.
+4. **GPT-5.5 for premium fallback**: hard debug, high blast radius, final arbitration.
+5. **Penalize verbosity**. A cheaper per-token model can be more expensive if it produces unnecessary output.
+6. **Approval-gate config/cost changes**. Model defaults, fallback chains, cron models, gateway config, and provider spend changes need explicit approval plus rollback.
+
+## Verification Checklist
+
+Before claiming a routing change works:
+
 ```bash
-hermes chat --provider minimax -m MiniMax-M2.5 -q "<task>"
+hermes profile list
+hermes config | grep -A12 '^delegation:'
+hermes chat --provider zai -m glm-5.2 -q 'Output exactly GLM_OK' -Q
+hermes chat --provider openai-codex -m gpt-5.5 -q 'Output exactly GPT_OK' -Q
+pi --list-models kimi
 ```
 
-### Kimi K2.5 direct lane
+If using a profile-specific lane:
+
 ```bash
-hermes chat --provider kimi -m kimi-k2.5 -q "<task>"
+hermes -p <profile> chat -q 'Output exactly PROFILE_OK' -Q
 ```
 
-### local-carnice lane
-```bash
-hermes chat --provider local-carnice -m Carnice-9b-Q6_K.gguf -q "<task>"
+For config changes, also verify:
+
+- backup exists,
+- diff is exactly the intended routing change,
+- new session or gateway restart/reset happened when required,
+- fallback path is known,
+- no paid provider was introduced silently.
+
+## Fake Tool-Call Guard
+
+Routing instructions must become real execution. A response that prints this is a failure:
+
+```text
+delegate_task(goal="...", toolsets=["terminal"])
 ```
 
-For long jobs, run those in the background or inside `tmux`.
-
-## Verification
-
-### 1. Check the configured default delegated lane
-```bash
-hermes config | grep -A8 '^delegation:'
-```
-
-Expected shape:
-```yaml
-delegation:
-  provider: zai
-  model: glm-5.1
-  reasoning_effort: high
-```
-
-### 2. Check the fallback model
-```bash
-hermes config | grep -A4 '^fallback_model:'
-```
-
-Expected shape:
-```yaml
-fallback_model:
-  provider: openai-codex
-  model: gpt-5.4
-```
-
-### 3. Check the orchestrator prompt exists
-```bash
-hermes config | grep -A20 '^agent:'
-```
-
-You should see the delegate-first routing instructions under `agent.system_prompt`.
-
-## Practical Notes
-
-- Keep the top-level model for orchestration and judgment.
-- Use `delegate_task` as the default GLM lane.
-- Escalate to GPT-5.4 when a task becomes terminal-heavy, infra-heavy, or ugly to debug.
-- Use M2.5 for cheap volume.
-- Use M2.7 when you want a cheaper but more agentic engineer.
-- This is the strongest no-code version of orchestrator-only behavior: system prompt + prefill examples + routing defaults. It improves delegation compliance but does not hard-enforce it at the Hermes runtime level.
-- Existing Hermes sessions may keep the old delegation model in memory. Start a new session, run `/reset`, or restart the gateway / CLI process to pick up the new routing config.
-
-## Files Touched in This Setup
-
-- `~/.hermes/config.yaml`
-- `tiered-model-routing.md`
-- `README.md`
+The agent must either call the real tool or say what prerequisite is missing. Do not use placeholders like `<path>`, `<cmd>`, or `<job_id>` in an actual handoff.
 
 ## Rollback
 
-Restore the backup copy of `~/.hermes/config.yaml` created before editing, then restart Hermes / gateway.
+For config-backed routing changes:
+
+1. Restore the backup copy of `~/.hermes/config.yaml` or profile-local `config.yaml`.
+2. Restart the affected CLI/gateway session or run a fresh session.
+3. Re-run the relevant smoke tests.
+4. Confirm no cron jobs still pin the reverted model/provider.

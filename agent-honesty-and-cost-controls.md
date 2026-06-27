@@ -13,7 +13,25 @@ Add explicit uncertainty behavior to profile rules and task handoffs:
 
 This matters because agents often optimize for sounding helpful. A good profile makes honesty the helpful behavior.
 
-## 2. Verify before writing and before reporting done
+## 2. Tool-call-shaped text must mean real tool use
+
+Do not let agents print tool-call-shaped text as if it executed. This is a common failure when an agent knows the right action but emits it as prose instead of using the runtime tool.
+
+Invalid final output:
+
+```text
+delegate_task(goal="Fix the failing backend test", toolsets=["terminal", "file"])
+```
+
+Valid behavior:
+
+- Call the real `delegate_task` tool in the tool channel.
+- Or say `BLOCKED` and name the one missing prerequisite, such as the repo path or job ID.
+- Never use placeholders like `<path>`, `<cmd>`, or `<job_id>` in a claimed handoff.
+
+A simple review rule: if the final response contains `delegate_task(`, `cronjob(`, `terminal(`, or similar tool syntax, verify that a real tool call happened. If not, treat the answer as failed, not merely verbose.
+
+## 3. Verify before writing and before reporting done
 
 For file or code work:
 
@@ -28,7 +46,7 @@ For research or market work:
 - Label unverified social claims as unverified.
 - Preserve the source URL or source file path behind the claim.
 
-## 3. Use hooks where the runtime supports them
+## 4. Use hooks where the runtime supports them
 
 Some agent runtimes can run hooks after tool use or before stop. When available, use them as enforcement, not decoration:
 
@@ -38,7 +56,7 @@ Some agent runtimes can run hooks after tool use or before stop. When available,
 
 Hermes profiles should still encode the same behavior even when hooks are unavailable: explicit tool use, verification commands, and a clear done definition.
 
-## 4. Add an independent verification pass for high-risk claims
+## 5. Add an independent verification pass for high-risk claims
 
 Use a reviewer profile, Janitor verifier, or second-pass checklist when the claim is easy to fake and costly to trust:
 
@@ -50,7 +68,7 @@ Use a reviewer profile, Janitor verifier, or second-pass checklist when the clai
 
 The verifier should inspect the artifact or command output, not just trust the worker summary.
 
-## 5. Control token cost before adding tools
+## 6. Control token cost before adding tools
 
 Before installing a compression proxy or routing layer, apply the cheap controls first:
 
@@ -60,7 +78,7 @@ Before installing a compression proxy or routing layer, apply the cheap controls
 - Keep `auxiliary.compression.provider` set to `auto` unless there is a verified reason to override it.
 - Track expensive workflows by job/profile so cost can be optimized at the source.
 
-## 6. Evaluate compression tools before wiring them in
+## 7. Evaluate compression tools before wiring them in
 
 Tools like Headroom are promising because they compress tool outputs, logs, RAG chunks, and agent context before the LLM sees them. Do not wire them into Hermes globally by default.
 
