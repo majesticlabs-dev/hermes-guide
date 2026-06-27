@@ -15,7 +15,7 @@ Do not pretend a lane exists just because it is named in prose. Smoke-test the e
 | Lane | Example model/provider | Use when | Notes |
 |---|---|---|---|
 | Deterministic/no-agent | script-only cron/job | check-ins, backups, watchdogs, exact fixed messages | Best cost is no LLM. |
-| Trivial / low-stakes | Kimi K2.7 when available; verified local examples may be Kimi K2.6 / Kimi-for-coding | formatting, simple edits, extraction, boilerplate, cheap motion | Verify exact Kimi model ID before configuring. |
+| Trivial / low-stakes | `kimi-coding/kimi-k2.7-code` verified; other direct Kimi lanes include Kimi K2.6 / Kimi-for-coding | formatting, simple edits, extraction, boilerplate, cheap motion | Hermes direct smoke passed; Pi 0.73.1 may not list this lane. |
 | High-context / high-IQ leverage | `zai / glm-5.2` | repo-scale context, second review, agentic coding, frontend/design, long-context synthesis | Good default delegation lane when leverage matters. |
 | Premium fallback | `openai-codex / gpt-5.5` | hard failures, production/security risk, final arbitration | Keep scarce; don't use as first reflex. |
 | Social/X signal | Grok / xAI profile | social scans, buyer language, X intelligence | Keep social work in the social profile/lane. |
@@ -53,13 +53,15 @@ hermes chat --provider openai-codex -m gpt-5.5 -q "<task>"
 
 ### Kimi trivial/front-end lane
 
-Use the exact direct provider/model ID that your runtime lists. Example shape only:
+Use the verified direct Hermes lane:
 
 ```bash
-hermes chat --provider kimi-coding -m kimi-k2.6 -q "<task>"
+hermes chat --provider kimi-coding -m kimi-k2.7-code -q "<task>"
 ```
 
-If you expect Kimi K2.7, verify it first:
+Other direct Kimi lanes may include `kimi-coding/kimi-k2.6`, `kimi-coder/kimi-k2.6`, and `kimi-coding/kimi-for-coding`; verify with the runtime before configuring.
+
+If checking through Pi, note that Pi 0.73.1 may not list `kimi-k2.7-code` even when Hermes can run it directly:
 
 ```bash
 set -a
@@ -73,7 +75,7 @@ Do not substitute a paid OpenRouter Kimi route unless the user explicitly approv
 ## Routing Rules
 
 1. **No-agent first** for deterministic recurring work.
-2. **Kimi for cheap motion** once the exact Kimi lane is verified.
+2. **Kimi for cheap motion** through verified `kimi-coding/kimi-k2.7-code`.
 3. **GLM-5.2 for leverage**: large context, repo-scale reasoning, agentic coding, second review, design/frontend generation.
 4. **GPT-5.5 for premium fallback**: hard debug, high blast radius, final arbitration.
 5. **Penalize verbosity**. A cheaper per-token model can be more expensive if it produces unnecessary output.
