@@ -15,7 +15,8 @@ Do not pretend a lane exists just because it is named in prose. Smoke-test the e
 | Lane | Example model/provider | Use when | Notes |
 |---|---|---|---|
 | Deterministic/no-agent | script-only cron/job | check-ins, backups, watchdogs, exact fixed messages | Best cost is no LLM. |
-| Trivial / low-stakes | `kimi-coding/kimi-k2.7-code` verified; other direct Kimi lanes include Kimi K2.6 / Kimi-for-coding | formatting, simple edits, extraction, boilerplate, cheap motion | Hermes direct smoke passed; Pi 0.73.1 may not list this lane. |
+| Free/local cheap lane | `beelink / Qwopus3.6-27B-Coder-Compat-MTP-Q6_K` | tiny/simple prompts, smart-model-routing cheap model, mechanical low-risk work | Free when the Beelink endpoint is online; smoke-test before depending on it. |
+| Trivial / low-stakes hosted lane | `kimi-coding / kimi-k2.7-code` verified; other direct Kimi lanes include Kimi K2.6 / Kimi-for-coding | formatting, simple edits, extraction, boilerplate, cheap motion | Hermes direct smoke passed; Pi 0.73.1 may not list this lane. |
 | High-context / high-IQ leverage | `zai / glm-5.2` | repo-scale context, second review, agentic coding, frontend/design, long-context synthesis | Good default delegation lane when leverage matters. |
 | Premium fallback | `openai-codex / gpt-5.5` | hard failures, production/security risk, final arbitration | Keep scarce; don't use as first reflex. |
 | Social/X signal | Grok / xAI profile | social scans, buyer language, X intelligence | Keep social work in the social profile/lane. |
@@ -75,11 +76,12 @@ Do not substitute a paid OpenRouter Kimi route unless the user explicitly approv
 ## Routing Rules
 
 1. **No-agent first** for deterministic recurring work.
-2. **Kimi for cheap motion** through verified `kimi-coding/kimi-k2.7-code`.
-3. **GLM-5.2 for leverage**: large context, repo-scale reasoning, agentic coding, second review, design/frontend generation.
-4. **GPT-5.5 for premium fallback**: hard debug, high blast radius, final arbitration.
-5. **Penalize verbosity**. A cheaper per-token model can be more expensive if it produces unnecessary output.
-6. **Approval-gate config/cost changes**. Model defaults, fallback chains, cron models, gateway config, and provider spend changes need explicit approval plus rollback.
+2. **Beelink/Qwopus for free local cheap motion** when the endpoint is online and the task is tiny/simple.
+3. **Kimi for stronger hosted cheap motion** through verified `kimi-coding/kimi-k2.7-code`.
+4. **GLM-5.2 for leverage**: large context, repo-scale reasoning, agentic coding, second review, design/frontend generation.
+5. **GPT-5.5 for premium fallback**: hard debug, high blast radius, final arbitration.
+6. **Penalize verbosity**. A cheaper per-token model can be more expensive if it produces unnecessary output.
+7. **Approval-gate config/cost changes**. Model defaults, fallback chains, cron models, gateway config, and provider spend changes need explicit approval plus rollback.
 
 ## Verification Checklist
 
@@ -88,6 +90,8 @@ Before claiming a routing change works:
 ```bash
 hermes profile list
 hermes config | grep -A12 '^delegation:'
+hermes chat --provider beelink -m Qwopus3.6-27B-Coder-Compat-MTP-Q6_K -q 'Output exactly BEELINK_OK' -Q
+hermes chat --provider kimi-coding -m kimi-k2.7-code -q 'Output exactly KIMI_OK' -Q
 hermes chat --provider zai -m glm-5.2 -q 'Output exactly GLM_OK' -Q
 hermes chat --provider openai-codex -m gpt-5.5 -q 'Output exactly GPT_OK' -Q
 pi --list-models kimi
