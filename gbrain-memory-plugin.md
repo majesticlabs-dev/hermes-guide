@@ -171,15 +171,28 @@ Use GBrain when you want:
 - lightweight graph recall without embeddings
 - entity-based linking across projects, people, URLs, paths, and tags
 - deterministic behavior that is easy to inspect and test
+- a personal AI partner that can recall broad context without putting every fact into the prompt
 
 Do not use GBrain as a replacement for:
 
-- long-form documents or a knowledge base
+- long-form documents or a personal knowledge base
+- scoped team/project wikis with explicit access boundaries
 - vector semantic search over large corpora
 - confidential secret storage
 - arbitrary session transcript dumping
 
-GBrain is best for durable notes and explicit memory facts, not raw chat logs.
+GBrain is best for durable notes, explicit memory facts, and recall across many small pieces of context. A wiki or knowledge base remains the better home for authored documents, project operating state, specs, decision logs, and material a team member should be able to read directly.
+
+## GBrain vs scoped wikis
+
+For agent-first teams, avoid one giant shared memory blob. Use scope boundaries:
+
+- **Personal GBrain:** broad personal recall for the user's private partner/chief-of-staff agent. It may know books read, mentors, preferences, decisions, contacts, and cross-domain context.
+- **Personal knowledge base / wiki:** authored durable knowledge the user wants to own across machines: ideas, learnings, strategy, project notes, templates, and decision history.
+- **Scoped team or topic wikis:** bounded context for agents working with teammates. These should contain only what that role/team/project needs.
+- **Hot memory (`MEMORY.md` / `USER.md`):** tiny every-turn steering, not an archive.
+
+Correctness comes from routing every fact to the narrowest useful layer. If a teammate's agent only needs finance context, give it the finance wiki, not the user's whole personal GBrain. If an agent needs a broad personal pattern, pull it from GBrain on demand instead of copying it into hot memory.
 
 ## Security and privacy notes
 
