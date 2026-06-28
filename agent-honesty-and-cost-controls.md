@@ -78,7 +78,19 @@ Before installing a compression proxy or routing layer, apply the cheap controls
 - Keep `auxiliary.compression.provider` set to `auto` unless there is a verified reason to override it.
 - Track expensive workflows by job/profile so cost can be optimized at the source.
 
-## 7. Evaluate compression tools before wiring them in
+## 7. Keep push memory tiny and route lessons to skills
+
+Always-loaded memory, SOUL.md, CLAUDE.md, and AGENTS.md are expensive because they are injected into every session. Treat them as a hot steering layer, not an archive.
+
+Use three buckets during memory review:
+
+- **Delete / archive:** shipped-work records, transient project status, old PRs, one-off logs, and anything git/session history already preserves.
+- **Move to a skill:** workflow-specific lessons, recurring tool gotchas, profile-lane rules, or anything learned the hard way about a repeated procedure.
+- **Keep in push memory:** cross-cutting preferences, approval boundaries, safety scar tissue, canonical paths, and facts that change behavior across many skills or profiles.
+
+The rule of thumb: if a line does not change a future decision, remove it from push memory. If it changes one workflow, patch that workflow's skill. If it needs recall but not every-turn steering, store it in pull memory such as KB/GBrain or session-searchable notes.
+
+## 8. Evaluate compression tools before wiring them in
 
 Tools like Headroom are promising because they compress tool outputs, logs, RAG chunks, and agent context before the LLM sees them. Do not wire them into Hermes globally by default.
 
