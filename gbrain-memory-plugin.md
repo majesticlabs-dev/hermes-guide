@@ -194,6 +194,8 @@ For agent-first teams, avoid one giant shared memory blob. Use scope boundaries:
 
 Correctness comes from routing every fact to the narrowest useful layer. If a teammate's agent only needs finance context, give it the finance wiki, not the user's whole personal GBrain. If an agent needs a broad personal pattern, pull it from GBrain on demand instead of copying it into hot memory.
 
+For multiplayer agent products, treat GBrain/scoped wikis as the **context and access layer**, not the whole product. The second half is the collaboration surface: where humans invite agents, see what context the agent can access, review its work, and hand off decisions without losing provenance.
+
 ## Security and privacy notes
 
 - GBrain is local-first; it does not call external APIs.

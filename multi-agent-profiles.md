@@ -207,6 +207,13 @@ These files live outside any single profile. Every profile references them from 
 
 Without shared context, each SOUL.md has to duplicate style rules and conventions independently. That breaks fast: one profile gets updated, the other doesn't, they start disagreeing about whether em dashes are allowed.
 
+Agent multiplayer has two separate surfaces:
+
+1. **The shared context layer** — information, access, permissions, visibility, and discoverability. This decides what each person, profile, or project agent is allowed to know and where it finds the current source of truth.
+2. **The collaboration UI** — the place where multiple humans and one or more agents work together on the same project. This can be a chat thread, project room, Kanban card, issue, meeting note, or purpose-built multiplayer agent UI.
+
+Do not blur these. A good UI on top of bad context becomes confident chaos. A good context layer with no shared workspace becomes invisible infrastructure. Build the context and permission model first, then expose it through the smallest collaborative surface that fits the team.
+
 The shared-context pattern gives you:
 
 - **Single source of truth for cross-cutting rules.** Writing conventions, banned words, voice decision matrix, all in one place.
