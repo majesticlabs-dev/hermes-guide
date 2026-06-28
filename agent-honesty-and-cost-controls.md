@@ -82,13 +82,14 @@ Before installing a compression proxy or routing layer, apply the cheap controls
 
 Always-loaded memory, SOUL.md, CLAUDE.md, and AGENTS.md are expensive because they are injected into every session. Treat them as a hot steering layer, not an archive.
 
-Use three buckets during memory review:
+Use four buckets during memory review:
 
 - **Delete / archive:** shipped-work records, transient project status, old PRs, one-off logs, and anything git/session history already preserves.
 - **Move to a skill:** workflow-specific lessons, recurring tool gotchas, profile-lane rules, or anything learned the hard way about a repeated procedure.
+- **Move to cron:** recurring audits, reminders, watchdogs, scheduled briefs, and deterministic maintenance checks. Prefer `no_agent` script jobs when no reasoning is needed.
 - **Keep in push memory:** cross-cutting preferences, approval boundaries, safety scar tissue, canonical paths, and facts that change behavior across many skills or profiles.
 
-The rule of thumb: if a line does not change a future decision, remove it from push memory. If it changes one workflow, patch that workflow's skill. If it needs recall but not every-turn steering, store it in pull memory such as KB/GBrain or session-searchable notes.
+The rule of thumb: if a line does not change a future decision, remove it from push memory. If it changes one workflow, patch that workflow's skill. If it is a recurring check or timed follow-up, make it cron. If it needs recall but not every-turn steering, store it in pull memory such as GBrain, profile-local notes, or session-searchable history.
 
 ## 8. Evaluate compression tools before wiring them in
 

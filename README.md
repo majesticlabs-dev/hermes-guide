@@ -59,7 +59,7 @@ Official docs: [Browser Automation](https://hermes-agent.nousresearch.com/docs/u
 - [PageIndex Evaluation](pageindex-evaluation.md) — Technical evaluation of VectifyAI/PageIndex, a reasoning-based RAG system with architecture notes and integration tradeoffs.
 - [xurl — X API CLI for Hermes](xurl.md) — How to install, authenticate, configure apps/users/redirects/auth modes, safely verify, and use the official X Developer Platform CLI from Hermes.
 - [Lessons Learned](lessons-learned.md) — Hard-won rules from AGI experiment reviews applied to Hermes: PRD-first workflows, circuit breakers, self-scoring, handoff templates, and process discipline hard rules.
-- [Agent Honesty and Cost Controls](agent-honesty-and-cost-controls.md) — Practical profile/skill guardrails for uncertainty, verify-before-done behavior, hook-style checks, independent verification, push-memory hygiene, and token-cost controls.
+- [Agent Honesty and Cost Controls](agent-honesty-and-cost-controls.md) — Practical profile/skill/cron guardrails for uncertainty, verify-before-done behavior, hook-style checks, independent verification, push-memory hygiene, and token-cost controls.
 - [Agent-Native Toolbelt Implementation Plan](agent-native-toolbelt-plan.md) — Plan for converting repeated agent workflows into deterministic CLIs with local mirrors, budget guardrails, Hermes skills, and compound commands.
 - [Signal-to-Skill Report](signal-to-skill-report.md) — Weekly loop for scanning Hermes tool-use patterns, ranking Top 5 reusable workflow candidates, applying them as skills, and verifying the result.
 
