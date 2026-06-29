@@ -31,11 +31,38 @@ Valid behavior:
 
 A simple review rule: if the final response contains `delegate_task(`, `cronjob(`, `terminal(`, or similar tool syntax, verify that a real tool call happened. If not, treat the answer as failed, not merely verbose.
 
-## 3. Parallel subagents require both config and behavior
+## 3. Teach the multi-subset delegation pattern
 
-Hermes can fan work out across subagents, but the feature being enabled is not the same as the agent using it correctly.
+Hermes can fan work out across subagents, but the feature being enabled is not enough. The profile/SOUL prompt must teach the LLM when and how to split the work.
 
-Check the runtime first:
+Copyable LLM instruction:
+
+```markdown
+## Multi-subset delegation
+
+When a task contains multiple independent subsets of work, do not handle them sequentially in the main thread. Split the job into bounded subsets and run them in parallel with real subagent/tool calls.
+
+Use this pattern when the subsets have no ordering dependency and no overlapping write surface, for example:
+- code review + security audit + test coverage review
+- frontend implementation + backend implementation + reviewer validation
+- source extraction + market scan + synthesis/fact-check
+- repo reconnaissance + failing-test investigation + docs/config inspection
+
+Before delegating, define each subset with:
+- objective
+- exact inputs: repo/path/URL/files/context
+- constraints and side-effect boundary
+- expected output format
+- verification criteria
+
+Then execute the real delegation call, such as `delegate_task(tasks=[...])`, or create real Kanban/profile handoffs for durable work. Do not print tool-call-shaped text as prose. Do not use placeholders like `<path>`, `<cmd>`, or `<job_id>`; discover the real value or ask one targeted question.
+
+After the subsets return, the main agent is the judge: compare outputs against the original request, resolve conflicts, run/inspect verification, and merge into one final answer. Workers do not grade themselves.
+
+Do not use this pattern when the steps are inherently sequential, when two workers would edit the same files, or when a deterministic local command/script can answer the question faster than an LLM worker.
+```
+
+Runtime checks still matter:
 
 ```bash
 hermes tools list | grep delegation
@@ -47,15 +74,7 @@ print(cfg.get('delegation', {}))
 PY
 ```
 
-Look for:
-
-- `delegation` toolset enabled
-- `delegation.max_concurrent_children` greater than `1`
-- `delegation.max_async_children` greater than `1`, if present
-- `delegation.max_spawn_depth` set intentionally
-- a valid `delegation.provider` / `delegation.model`
-
-Then test behavior. When the task has independent lanes, the orchestrator should make a real `delegate_task(tasks=[...])` call or create real Kanban/profile handoffs. If it only prints `delegate_task(...)` text, the configuration is not the problem — the agent failed the operating contract.
+Look for `delegation` enabled, `max_concurrent_children > 1`, `max_async_children > 1` if present, and a valid delegation model/provider. But if the agent only prints `delegate_task(...)` text, the problem is not config — the LLM instruction failed.
 
 ## 4. Verify before writing and before reporting done
 
