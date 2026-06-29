@@ -31,7 +31,33 @@ Valid behavior:
 
 A simple review rule: if the final response contains `delegate_task(`, `cronjob(`, `terminal(`, or similar tool syntax, verify that a real tool call happened. If not, treat the answer as failed, not merely verbose.
 
-## 3. Verify before writing and before reporting done
+## 3. Parallel subagents require both config and behavior
+
+Hermes can fan work out across subagents, but the feature being enabled is not the same as the agent using it correctly.
+
+Check the runtime first:
+
+```bash
+hermes tools list | grep delegation
+python3 - <<'PY'
+from pathlib import Path
+import yaml
+cfg = yaml.safe_load((Path.home() / '.hermes/config.yaml').read_text())
+print(cfg.get('delegation', {}))
+PY
+```
+
+Look for:
+
+- `delegation` toolset enabled
+- `delegation.max_concurrent_children` greater than `1`
+- `delegation.max_async_children` greater than `1`, if present
+- `delegation.max_spawn_depth` set intentionally
+- a valid `delegation.provider` / `delegation.model`
+
+Then test behavior. When the task has independent lanes, the orchestrator should make a real `delegate_task(tasks=[...])` call or create real Kanban/profile handoffs. If it only prints `delegate_task(...)` text, the configuration is not the problem — the agent failed the operating contract.
+
+## 4. Verify before writing and before reporting done
 
 For file or code work:
 
@@ -46,7 +72,7 @@ For research or market work:
 - Label unverified social claims as unverified.
 - Preserve the source URL or source file path behind the claim.
 
-## 4. Use hooks where the runtime supports them
+## 5. Use hooks where the runtime supports them
 
 Some agent runtimes can run hooks after tool use or before stop. When available, use them as enforcement, not decoration:
 
@@ -56,7 +82,7 @@ Some agent runtimes can run hooks after tool use or before stop. When available,
 
 Hermes profiles should still encode the same behavior even when hooks are unavailable: explicit tool use, verification commands, and a clear done definition.
 
-## 5. Add an independent verification pass for high-risk claims
+## 6. Add an independent verification pass for high-risk claims
 
 Use a reviewer profile, Janitor verifier, or second-pass checklist when the claim is easy to fake and costly to trust:
 
@@ -68,7 +94,7 @@ Use a reviewer profile, Janitor verifier, or second-pass checklist when the clai
 
 The verifier should inspect the artifact or command output, not just trust the worker summary.
 
-## 6. Control token cost before adding tools
+## 7. Control token cost before adding tools
 
 Before installing a compression proxy or routing layer, apply the cheap controls first:
 
@@ -78,7 +104,7 @@ Before installing a compression proxy or routing layer, apply the cheap controls
 - Keep `auxiliary.compression.provider` set to `auto` unless there is a verified reason to override it.
 - Track expensive workflows by job/profile so cost can be optimized at the source.
 
-## 7. Keep push memory tiny and route lessons to skills
+## 8. Keep push memory tiny and route lessons to skills
 
 Always-loaded memory, SOUL.md, CLAUDE.md, and AGENTS.md are expensive because they are injected into every session. Treat them as a hot steering layer, not an archive.
 
@@ -91,7 +117,7 @@ Use four buckets during memory review:
 
 The rule of thumb: if a line does not change a future decision, remove it from push memory. If it changes one workflow, patch that workflow's skill. If it is a recurring check or timed follow-up, make it cron. If it needs recall but not every-turn steering, store it in pull memory such as GBrain, profile-local notes, or session-searchable history.
 
-## 8. Evaluate compression tools before wiring them in
+## 9. Evaluate compression tools before wiring them in
 
 Tools like Headroom are promising because they compress tool outputs, logs, RAG chunks, and agent context before the LLM sees them. Do not wire them into Hermes globally by default.
 
