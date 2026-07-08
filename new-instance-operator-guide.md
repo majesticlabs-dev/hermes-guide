@@ -178,6 +178,7 @@ Recommended defaults for most operator setups:
 hermes config set approvals.mode smart
 hermes config set display.busy_input_mode queue
 hermes config set auxiliary.compression.provider auto
+hermes config set session_reset.mode none
 ```
 
 Why:
@@ -185,6 +186,7 @@ Why:
 - `approvals.mode smart`: low-risk actions can proceed; risky/destructive actions still require approval.
 - `display.busy_input_mode queue`: new messages wait instead of interrupting in-flight work.
 - `auxiliary.compression.provider auto`: avoids stale cross-provider compression model mismatches.
+- `session_reset.mode none`: prevents surprise daily or idle session resets that make the agent lose active context. Use manual `/reset` or `/new` when you intentionally want a clean session.
 
 For gateways or production-like usage, restart after config changes:
 
