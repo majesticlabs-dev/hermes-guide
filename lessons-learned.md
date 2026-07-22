@@ -145,6 +145,30 @@ Compression tools can be useful, but only after they prove they preserve facts a
 
 ---
 
+## 12. Add a Second-Order Improvement Loop
+
+A reliable workflow is only the first loop: receive a task, gather context, act, verify, and record the outcome. Mature Hermes operations also need a bounded second loop that improves the first.
+
+Recommended pattern:
+
+1. **Record structured outcomes with reasons.** `failed` or `no reply` is weak evidence; record what failed, why, and which rule, skill, prompt, or tool path was involved.
+2. **Keep judgment reviewable.** Put routing rules, acceptance criteria, prompts, and scorecards in small files humans can inspect instead of burying every decision in code or one giant system prompt.
+3. **Propose one conceptual change at a time.** This preserves attribution and makes rollback straightforward.
+4. **Run a fixed eval before accepting the change.** Include successes, regressions, bad-fit cases, and edge cases. A plausible explanation is not evidence.
+5. **Reject flat or worse changes.** Revert them rather than rationalizing them.
+6. **Require human review before promotion.** The improver may propose and test; it should not silently promote its own policy changes.
+7. **Tune on a cadence, not after every outcome.** Weekly or threshold-based review reduces overfitting to one loud event.
+
+**Why:** without this loop, corrections disappear into session history and the same failures recur. With it, outcomes become small, testable improvements to skills, prompts, evals, or operating rules.
+
+**Guardrail:** do not optimize a convenient proxy such as task count, reply rate, or scorecard points in isolation. Require minimum sample sizes where relevant and pair throughput metrics with quality, downstream value, safety, and regression checks. Never weaken the eval gate with an unconditional success path such as `test_command || true` when later steps depend on that result.
+
+For recurring tool-use patterns, the [Signal-to-Skill Report](signal-to-skill-report.md) is one implementation of this principle. Other workflows can use the same structure without creating a new skill: outcome log → bounded proposal → eval → human review → promotion.
+
+*Pattern adapted from a public article about a self-improving outbound workflow. Specific performance claims were not independently verified.*
+
+---
+
 ## The Meta-Lesson
 
 All of these lessons came from running the scorecard honestly and reviewing what went wrong. The scorecard didn't create these insights — the data did. The scorecard just made sure the data was collected and reviewed regularly.
