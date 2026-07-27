@@ -16,6 +16,23 @@ Use this order:
 
 The goal is compounding behavior, not a larger skill pile.
 
+## Quality bar for reusable or public skills
+
+A useful `SKILL.md` is not automatically a production-ready skill. Before recommending, publishing, or broadly installing a skill, verify that it is:
+
+- **Precisely triggered** — documents both when to load and when not to load.
+- **Operational** — changes the agent's process with ordered steps, checkable completion criteria, failure boundaries, and an explicit safety/approval contract.
+- **Reproducible** — includes realistic success and boundary/failure examples, with every referenced script, template, and file present.
+- **Tested at the contract level** — covers a positive trigger, negative trigger, expected workflow behavior, safety boundary, and any known regression. Structural tests prove packaging consistency; they do not prove real-world outcomes.
+- **Public-safe** — contains no credentials, private paths, memories, sessions, databases, logs, caches, customer data, or generated artifacts.
+- **Versioned and attributable** — keeps source/license attribution, a clear version, and a machine-readable catalog when publishing a multi-skill repository.
+
+For a public skill repository, add deterministic validation for frontmatter/catalog agreement, JSON validity, local Markdown links, supporting-file existence, common secret patterns, and prohibited private state. Keep bulky references behind progressive-disclosure links instead of inflating every `SKILL.md`.
+
+Treat stars, download counts, and passing structural checks as signals—not evidence that a workflow is safe, useful, or genuinely field-tested. Adapt the narrow rules that improve the local owner skill; do not install an overlapping bundle just because it is well packaged.
+
+Pattern adapted from [Hermes Field Kit](https://github.com/asimons81/hermes-field-kit), Apache-2.0.
+
 ## Current recommendations
 
 ### `last30days`
