@@ -15,6 +15,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 
 ## Start Here
 
+- [LLM Start Here](LLM-START-HERE.md) — Machine-oriented bootstrap contract for interpreting this repository: reading order, authority hierarchy, evidence states, discovery rules, safety boundaries, and the standard architecture-handoff shape.
 - [New Hermes Instance Operator Guide](new-instance-operator-guide.md) — The canonical setup sequence for a fresh Hermes instance or profile: install, model/provider config, toolsets, skills/proficiencies, memory, profile setup, gateway, cron, Kanban, verification, and privacy rules.
 - [SOUL.md Example](soul-md-example.md) — Public-safe templates for profile-level agent behavior: role, tone, tool rules, approval gates, quality bar, and the boundary between SOUL.md, AGENTS.md, memory, and skills.
 - [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts.
