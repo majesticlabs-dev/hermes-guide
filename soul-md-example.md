@@ -4,6 +4,8 @@
 
 Keep project facts in `AGENTS.md`. Keep private user facts in memory. Keep secrets out of both. A good `SOUL.md` tells the agent how to act; it should not contain API keys, tokens, customer data, private paths, or personal biographical details.
 
+For a compact file that is ready to copy and adapt, start with [`SOUL.public.example.md`](SOUL.public.example.md). This page explains the design choices and provides additional role-specific examples.
+
 ## Where it lives
 
 Default profile:
