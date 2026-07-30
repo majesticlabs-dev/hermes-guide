@@ -54,7 +54,6 @@ This index covers every file tracked in the repository. Local-only and ignored f
 - [`gkisokay-stack-v1.md`](gkisokay-stack-v1.md) — Historical model-stack tiers and selection rationale.
 - [`model-tier-rankings.md`](model-tier-rankings.md) — Model rankings by Hermes role and workload.
 - [`tiered-model-routing.md`](tiered-model-routing.md) — Delegate-first routing across reasoning, budget, specialist, local, and fallback lanes.
-- [`fizzy-task-coordination.md`](fizzy-task-coordination.md) — Deprecated task-coordination approach retained for historical reference; current work uses Hermes Kanban.
 
 ### Memory, context, skills, and operating discipline
 
