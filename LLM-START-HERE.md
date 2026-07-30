@@ -24,6 +24,62 @@ Read only what the task requires:
 
 Do not load the entire repository into context by default. Start with this contract, inspect the task, and retrieve the narrowest relevant guide.
 
+## Complete file index
+
+This index covers every file tracked in the repository. Local-only and ignored files are intentionally excluded because they may contain private or machine-specific material.
+
+### Entry points and profile design
+
+- [`LLM-START-HERE.md`](LLM-START-HERE.md) — This machine-oriented bootstrap contract: authority, evidence, safety, discovery, execution, and the complete repository index.
+- [`README.md`](README.md) — Human-oriented overview and topical reading guide.
+- [`new-instance-operator-guide.md`](new-instance-operator-guide.md) — Canonical setup and verification sequence for a fresh Hermes instance or profile.
+- [`soul-md-example.md`](soul-md-example.md) — Explanation and templates for profile identity, behavior, boundaries, and the division between SOUL, project instructions, memory, and skills.
+- [`SOUL.public.example.md`](SOUL.public.example.md) — Compact, copy-ready public operator profile.
+- [`multi-agent-profiles.md`](multi-agent-profiles.md) — Isolated profile setup, shared context, invocation, handoffs, and policy ceilings.
+
+### Installation, operations, and integrations
+
+- [`1password-cli.md`](1password-cli.md) — Secure credential access with the 1Password CLI.
+- [`cloudflare-tunnel.md`](cloudflare-tunnel.md) — Exposing a local Hermes gateway through Cloudflare Tunnel.
+- [`extending-gateway-api.md`](extending-gateway-api.md) — Adding gateway API endpoints, middleware, and features.
+- [`installing-skills-from-url.md`](installing-skills-from-url.md) — Installing and updating skills from hosted Markdown URLs.
+- [`message-queuing.md`](message-queuing.md) — Busy-input behavior, Telegram batching, and rich-message rendering.
+- [`python-uv-venv.md`](python-uv-venv.md) — Running Hermes from a uv-managed Python virtual environment.
+- [`telegram-miniapp-setup.md`](telegram-miniapp-setup.md) — Deploying the Telegram Mini App with a standalone proxy, tunnel, authentication, and gateway API.
+- [`workspace-autostart.md`](workspace-autostart.md) — macOS launchd startup and gateway authentication wiring.
+- [`xurl.md`](xurl.md) — Installing, authenticating, verifying, and using the X Developer Platform CLI.
+
+### Models, routing, and coordination
+
+- [`gkisokay-stack-v1.md`](gkisokay-stack-v1.md) — Historical model-stack tiers and selection rationale.
+- [`model-tier-rankings.md`](model-tier-rankings.md) — Model rankings by Hermes role and workload.
+- [`tiered-model-routing.md`](tiered-model-routing.md) — Delegate-first routing across reasoning, budget, specialist, local, and fallback lanes.
+- [`fizzy-task-coordination.md`](fizzy-task-coordination.md) — Deprecated task-coordination approach retained for historical reference; current work uses Hermes Kanban.
+
+### Memory, context, skills, and operating discipline
+
+- [`agent-honesty-and-cost-controls.md`](agent-honesty-and-cost-controls.md) — Guardrails for uncertainty, real tool use, verification, memory hygiene, and token costs.
+- [`daily-context-questions.md`](daily-context-questions.md) — Scheduled prompts for gradually capturing durable personal context.
+- [`gbrain-memory-plugin.md`](gbrain-memory-plugin.md) — Local-first SQLite/FTS5 memory provider, entity extraction, linking, setup, privacy, and verification.
+- [`hermes-dreaming-plugin.md`](hermes-dreaming-plugin.md) — Background memory consolidation with review, audit, and safety controls.
+- [`lessons-learned.md`](lessons-learned.md) — Field-tested operating rules, failure lessons, quality gates, and improvement loops.
+- [`q100-taste-interview.md`](q100-taste-interview.md) — Structured 100-question protocol for extracting voice, taste, and aesthetic preferences.
+- [`signal-to-skill-report.md`](signal-to-skill-report.md) — Recurring workflow for finding and ranking reusable skill candidates from tool-use patterns.
+- [`skill-bundles.md`](skill-bundles.md) — Grouping repeatable skill clusters into slash-command bundles.
+- [`skills-to-install.md`](skills-to-install.md) — Curated recommendations for useful external and community skills.
+
+### Evaluations and implementation plans
+
+- [`agent-native-toolbelt-plan.md`](agent-native-toolbelt-plan.md) — Plan for turning repeated agent workflows into deterministic local CLIs and compound commands.
+- [`miniapp-standalone-proxy-plan.md`](miniapp-standalone-proxy-plan.md) — Implementation plan for decoupling Telegram Mini App support from Hermes core.
+- [`pageindex-evaluation.md`](pageindex-evaluation.md) — Evaluation of PageIndex architecture, capabilities, and Hermes integration tradeoffs.
+
+### Repository support
+
+- [`.gitignore`](.gitignore) — Local and private files excluded from version control and this public guide.
+
+When a tracked file is added, removed, or renamed, update this index in the same change. Verify completeness against `git ls-files` rather than relying on memory.
+
 ## Baseline architecture: three layers
 
 Use this model to orient yourself before inspecting a Hermes installation.
