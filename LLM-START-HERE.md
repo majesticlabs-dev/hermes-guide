@@ -34,7 +34,7 @@ This index covers every file tracked in the repository. Local-only and ignored f
 - [`README.md`](README.md) — Human-oriented overview and topical reading guide.
 - [`new-instance-operator-guide.md`](new-instance-operator-guide.md) — Canonical setup and verification sequence for a fresh Hermes instance or profile.
 - [`soul-md-example.md`](soul-md-example.md) — Explanation and templates for profile identity, behavior, boundaries, and the division between SOUL, project instructions, memory, and skills.
-- [`SOUL.public.example.md`](SOUL.public.example.md) — Compact, copy-ready public operator profile.
+- [`SOUL.md`](SOUL.md) — Compact, copy-ready public operator profile.
 - [`multi-agent-profiles.md`](multi-agent-profiles.md) — Isolated profile setup, shared context, invocation, handoffs, and policy ceilings.
 
 ### Installation, operations, and integrations
