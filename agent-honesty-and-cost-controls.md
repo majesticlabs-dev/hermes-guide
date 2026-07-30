@@ -55,6 +55,12 @@ Before delegating, define each subset with:
 - expected output format
 - verification criteria
 
+For consequential fan-out, also freeze the dispatch contract:
+- bind every subset to the same canonical goal artifact plus a version or digest
+- assign an explicit, non-overlapping write surface and owner to each subset
+- keep cost-, permission-, or risk-sensitive model/executor choices blocked until resolved instead of silently using a default
+- name the reviewer/integration owner; parallel workers do not auto-merge their own output
+
 Then execute the real delegation call, such as `delegate_task(tasks=[...])`, or create real Kanban/profile handoffs for durable work. Do not print tool-call-shaped text as prose. Do not use placeholders like `<path>`, `<cmd>`, or `<job_id>`; discover the real value or ask one targeted question.
 
 After the subsets return, the main agent is the judge: compare outputs against the original request, resolve conflicts, run/inspect verification, and merge into one final answer. Workers do not grade themselves.
@@ -84,6 +90,16 @@ For file or code work:
 - After editing, re-read or diff the touched artifact.
 - Run the smallest relevant check: syntax, lint, unit test, smoke test, link check, or `git status`.
 - Report only checks that actually ran. Never write “tests pass” unless the test command returned success.
+
+Keep completion claims on an evidence ladder:
+
+- **Prepared:** the plan, contract, handoff, or artifact exists.
+- **Observed:** the runtime recorded that an action ran and produced a result.
+- **Verified:** the matching test, readback, review, or acceptance gate passed.
+
+Track review, CI, merge-readiness, and merge as separate receipts. A worker summary or exit code zero does not prove any later state.
+
+*Evidence-state and dispatch-integrity vocabulary adapted selectively from [rlaope/oh-my-hermes](https://github.com/rlaope/oh-my-hermes/tree/ac0b5b5ee7a4503cde370d09cb92525457e444bb) (MIT). Its runtime, plugin, router, state store, memory provider, and role pack are not part of this Guide recommendation.*
 
 For research or market work:
 
