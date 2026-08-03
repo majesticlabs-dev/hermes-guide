@@ -46,7 +46,7 @@ This index covers every file tracked in the repository. Local-only and ignored f
 - [`message-queuing.md`](message-queuing.md) — Busy-input behavior, Telegram batching, and rich-message rendering.
 - [`python-uv-venv.md`](python-uv-venv.md) — Running Hermes from a uv-managed Python virtual environment.
 - [`telegram-miniapp-setup.md`](telegram-miniapp-setup.md) — Deploying the Telegram Mini App with a standalone proxy, tunnel, authentication, and gateway API.
-- [`workspace-autostart.md`](workspace-autostart.md) — macOS launchd startup and gateway authentication wiring.
+- [`workspace-autostart.md`](workspace-autostart.md) — Legacy Hermes Workspace launchd and gateway-auth reference; the selected interface is now [nesquena/hermes-webui](https://github.com/nesquena/hermes-webui).
 - [`xurl.md`](xurl.md) — Installing, authenticating, verifying, and using the X Developer Platform CLI.
 
 ### Models, routing, and coordination

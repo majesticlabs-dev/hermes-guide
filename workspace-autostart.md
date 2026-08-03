@@ -1,5 +1,7 @@
 # Hermes Workspace — Auto-Start & Gateway Auth Setup
 
+> **Status: legacy reference.** This operator setup now uses [nesquena/hermes-webui](https://github.com/nesquena/hermes-webui) as its selected browser interface. The local WebUI checkout is launched at login by `com.parantoux.hermes-webui`; the repository's `start.sh` starts the Python/vanilla-JS application against the existing Hermes installation. The Hermes Workspace setup below remains documented only for historical troubleshooting and should not drive current UI setup.
+
 How the Hermes Workspace web UI starts automatically on this machine, connects to the gateway, and authenticates API requests (including /jobs).
 
 ---

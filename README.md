@@ -28,7 +28,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 
 ## Operations Guides
 
-- [Workspace Auto-Start & Auth](workspace-autostart.md) — How Hermes Workspace auto-starts via launchd after reboot, the gateway/workspace plist arrangement, and the HERMES_API_TOKEN wiring needed to make `/jobs` and other authenticated endpoints work.
+- [Legacy Workspace Auto-Start & Auth](workspace-autostart.md) — Reference for the previous Hermes Workspace setup. The selected browser interface for this operator setup is now [nesquena/hermes-webui](https://github.com/nesquena/hermes-webui), not Hermes Workspace.
 - [Message Queuing, Telegram Batching & Rich Messages](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when the agent is busy, plus Telegram-specific text/media batching and native rich-message rendering.
 - [Cloudflare Tunnel](cloudflare-tunnel.md) — How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 - [1Password CLI](1password-cli.md) — Using 1Password with Hermes Agent for secure credential management.
@@ -43,7 +43,8 @@ These are worth checking on any serious Hermes setup because they change daily o
 
 - **Context-compression indicator** — watch compression count as a session-length signal; compression keeps work moving but repeated compression means you may need to split or persist context.
 - **`/browser connect` / browser automation** — use it when logged-in browser state or real UI interaction matters; prefer deterministic readers/scripts for repeatable extraction when available.
-- **Web Dashboard** — use it for administration surfaces like config, sessions, logs, credentials, cron jobs, skills, gateway, webhooks, and memory.
+- **[Hermes WebUI](https://github.com/nesquena/hermes-webui) (selected)** — the browser and phone interface used by this operator setup for chat, sessions, profiles, workspaces, tasks, skills, memory, and other Hermes controls. It runs against the existing Hermes installation and models.
+- **Official Web Dashboard** — an alternative administration surface documented by Hermes for config, sessions, logs, credentials, cron jobs, skills, gateway, webhooks, and memory.
 - **Desktop App** — use the native app when a visual/operator workspace is better than pure CLI or chat, especially for streaming tool output, files, profiles, cron, skills, settings, and voice.
 
 Official docs: [Browser Automation](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser), [Web Dashboard](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-dashboard), [Desktop App](https://hermes-agent.nousresearch.com/docs/user-guide/desktop), [Context Compression](https://hermes-agent.nousresearch.com/docs/developer-guide/context-compression-and-caching).
