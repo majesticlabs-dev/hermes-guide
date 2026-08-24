@@ -758,6 +758,7 @@ Cron rules:
 - Deliver only useful states: start if needed, blocked, finished, changed.
 - For authenticated browser work, include login recovery inside the script; do not rely on a current interactive session.
 - Verify which profile owns the job before editing or removing it.
+- Cron jobs capture the model and provider at creation. If the global inference config later drifts, unpinned jobs are skipped automatically to prevent unintended spend; pin a job explicitly when its model matters: `hermes cron edit <job-id> --provider <provider> --model <model>`.
 
 Cron output and status are task evidence, not durable memory.
 
