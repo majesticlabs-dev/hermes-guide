@@ -260,7 +260,7 @@ If a profile uses `.no-bundled-skills`, copy or install needed skills into that 
 
 ## Configure memory
 
-Hermes has several memory layers. Configure them intentionally.
+Hermes has several memory layers. Configure them intentionally. Keep native `MEMORY.md` and `USER.md` as small hot caches for every-turn steering. Put durable but low-frequency profile context into GBrain instead of creating a profile-local overflow file.
 
 ### Native memory
 
@@ -273,12 +273,14 @@ Typical files:
 ~/.hermes/memories/MEMORY.md   # environment facts, conventions, lessons
 ```
 
-Named profiles use profile-local memory:
+Named profiles keep their hot memory in profile-local files:
 
 ```text
 ~/.hermes/profiles/<profile>/memories/USER.md
 ~/.hermes/profiles/<profile>/memories/MEMORY.md
 ```
+
+These files are the prompt-visible cache, not the archive. Durable low-frequency profile context belongs in a profile-specific GBrain page, for example `hermes/profile-memory-overflow/<profile>`.
 
 Use native memory for:
 
@@ -311,33 +313,57 @@ hermes -p <profile> memory status
 hermes -p <profile> memory setup
 ```
 
-### GBrain / local-first memory
+### GBrain / pull memory
 
-Use a local-first provider when you want searchable, inspectable notes with no external memory vendor.
+Use GBrain for searchable, inspectable durable context that should not be injected into every turn. The active GBrain source is the canonical owner. Discover it instead of assuming a per-profile SQLite database:
+
+```bash
+gbrain sources list
+hermes memory status
+```
+
+Enable GBrain through Hermes when needed:
 
 ```bash
 hermes memory setup
 # choose: gbrain, if available
-```
-
-Manual config:
-
-```bash
 hermes config set memory.provider gbrain
-```
-
-For a profile:
-
-```bash
 hermes -p <profile> config set memory.provider gbrain
 ```
 
-Storage should live under the active Hermes home/profile, not in a shared accidental path:
+For hot-memory compaction, keep only every-turn steering in `MEMORY.md` and `USER.md`. Write the durable low-frequency remainder to a profile-specific `hermes-memory` page:
 
 ```text
-~/.hermes/gbrain/gbrain.db
-~/.hermes/profiles/<profile>/gbrain/gbrain.db
+hermes/profile-memory-overflow/<profile>
 ```
+
+Use valid YAML frontmatter. Quote a title that contains a colon:
+
+```markdown
+---
+title: "Hermes memory overflow: <profile>"
+type: hermes-memory
+profile: <profile>
+tags:
+  - hermes
+  - memory
+  - profile-<profile>
+---
+
+Durable low-frequency context goes here.
+```
+
+Write and verify the page:
+
+```bash
+gbrain put hermes/profile-memory-overflow/<profile> \
+  --content "$(cat /tmp/profile-memory-<profile>.md)"
+gbrain get hermes/profile-memory-overflow/<profile>
+```
+
+A successful write must report `status: created_or_updated` and `chunks > 0`. A zero exit code alone is not proof of success. If the result is `status: error` or `chunks: 0`, keep the local hot-memory source intact, inspect the frontmatter, and do not delete the local copy.
+
+Read the page back from GBrain and verify the canonical source before removing any temporary local copy. Do not create `~/.hermes/personal-memory/hot-memory-overflow.md` as a second archive layer.
 
 After changing the provider, restart the CLI or gateway.
 
@@ -357,7 +383,8 @@ Backfill should read existing memory and write deduplicated provider notes. It s
 Use this decision rule:
 
 ```text
-Stable user preference or environment fact -> memory
+Every-turn steering -> MEMORY.md / USER.md
+Durable low-frequency profile context -> profile-specific GBrain hermes-memory page
 Repeatable procedure -> skill
 Project facts -> AGENTS.md or project docs
 Durable task across profiles -> Kanban
@@ -845,7 +872,7 @@ Expected:
 - no cloned stale identity remains
 - tools match SOUL.md claims
 - role-specific skills are installed
-- memory is profile-local unless intentionally shared
+- memory hot cache is profile-local unless intentionally shared; durable low-frequency profile context belongs in a profile-specific GBrain page
 - handoff command uses `hermes -p <profile> chat -q`, not an invalid profile command
 
 ### Gateway

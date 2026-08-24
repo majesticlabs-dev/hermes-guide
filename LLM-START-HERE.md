@@ -58,7 +58,7 @@ This index covers every file tracked in the repository. Local-only and ignored f
 
 - [`agent-honesty-and-cost-controls.md`](agent-honesty-and-cost-controls.md) — Guardrails for uncertainty, real tool use, verification, memory hygiene, and token costs.
 - [`daily-context-questions.md`](daily-context-questions.md) — Scheduled prompts for gradually capturing durable personal context.
-- [`gbrain-memory-plugin.md`](gbrain-memory-plugin.md) — Local-first SQLite/FTS5 memory provider, entity extraction, linking, setup, privacy, and verification.
+- [`gbrain-memory-plugin.md`](gbrain-memory-plugin.md) — GBrain pull-memory routing, profile-specific durable context pages, active-source discovery, legacy plugin notes, setup, privacy, and verification.
 - [`hermes-dreaming-plugin.md`](hermes-dreaming-plugin.md) — Background memory consolidation with review, audit, and safety controls.
 - [`lessons-learned.md`](lessons-learned.md) — Field-tested operating rules, failure lessons, quality gates, and improvement loops.
 - [`q100-taste-interview.md`](q100-taste-interview.md) — Structured 100-question protocol for extracting voice, taste, and aesthetic preferences.
@@ -249,7 +249,7 @@ Include generalized paths, component responsibilities, inputs, outputs, communic
 | **Project instructions** | Repository or directory-scoped context such as `AGENTS.md`; inspect what the active runtime actually loads |
 | **Hot memory** | Small prompt-visible durable facts and preferences, not an archive or task tracker |
 | **Knowledge base** | Authored durable documents, decisions, and project or business knowledge |
-| **GBrain** | A possible local-first retrieval/memory provider; its local role and corpus must be discovered rather than assumed |
+| **GBrain** | Configured retrieval/memory layer; discover its active source, corpus, and scope before relying on it |
 | **Kanban** | Durable work coordination and audit trail for tasks that outlive a chat turn |
 | **Cron** | Scheduled execution in a fresh context; prompts must be self-contained |
 | **Gateway** | Messaging and external-interface runtime connecting channels to Hermes sessions |

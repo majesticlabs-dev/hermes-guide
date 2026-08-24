@@ -1,8 +1,10 @@
 # GBrain Memory Plugin
 
-GBrain is a local-first Hermes memory provider: a SQLite/FTS5 note store with deterministic entity extraction and graph-style linking between related notes.
+GBrain is a searchable Hermes pull-memory provider. The active deployment may use a registered canonical source and different storage engines. The SQLite/FTS5 details in this page describe the legacy standalone plugin architecture, not a universal storage contract.
 
-It is inspired by [garrytan/gbrain](https://github.com/garrytan/gbrain), but the Hermes version is intentionally boring infrastructure: no network calls, no model calls, and no external service dependency.
+It is inspired by [garrytan/gbrain](https://github.com/garrytan/gbrain), but the Hermes plugin is intentionally boring infrastructure: deterministic entity extraction and graph-style linking between related notes.
+
+> **Current memory-routing rule:** Keep `MEMORY.md` and `USER.md` for every-turn steering. Put durable low-frequency profile context into a profile-specific GBrain `hermes-memory` page, such as `hermes/profile-memory-overflow/<profile>`. Do not create a profile-local overflow file. The active GBrain source is canonical and must be discovered with `gbrain sources list`.
 
 ## Where to host it
 
@@ -45,19 +47,13 @@ Core capabilities:
 
 ## Storage model
 
-Default database path:
+For the active GBrain deployment, the registered source owns the canonical files and database. Discover the source instead of assuming a per-profile SQLite path:
 
-```text
-<hermes_home>/gbrain/gbrain.db
+```bash
+gbrain sources list
 ```
 
-For the default profile this resolves to:
-
-```text
-~/.hermes/gbrain/gbrain.db
-```
-
-For named profiles it should resolve under that profile's Hermes home, so memories do not bleed between profiles.
+Profile-specific compaction pages should be written with a stable slug such as `hermes/profile-memory-overflow/<profile>` and verified with `gbrain get`. The `~/.hermes/gbrain/gbrain.db` paths below apply only to the legacy standalone plugin architecture described by this page. They are not the default storage contract for the current GBrain CLI.
 
 ## Enable it
 

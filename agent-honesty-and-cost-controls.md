@@ -150,7 +150,7 @@ Use four buckets during memory review:
 - **Move to cron:** recurring audits, reminders, watchdogs, scheduled briefs, and deterministic maintenance checks. Prefer `no_agent` script jobs when no reasoning is needed.
 - **Keep in push memory:** cross-cutting preferences, approval boundaries, safety scar tissue, canonical paths, and facts that change behavior across many skills or profiles.
 
-The rule of thumb: if a line does not change a future decision, remove it from push memory. If it changes one workflow, patch that workflow's skill. If it is a recurring check or timed follow-up, make it cron. If it needs recall but not every-turn steering, store it in pull memory such as GBrain, profile-local notes, or session-searchable history.
+The rule of thumb: if a line does not change a future decision, remove it from push memory. If it changes one workflow, patch that workflow's skill. If it is a recurring check or timed follow-up, make it cron. If it needs recall but not every-turn steering, store it in pull memory, normally a profile-specific GBrain `hermes-memory` page or session-searchable history. Do not create a profile-local overflow file as a second memory layer.
 
 ## 9. Evaluate compression tools before wiring them in
 
