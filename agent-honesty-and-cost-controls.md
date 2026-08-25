@@ -152,7 +152,33 @@ Use four buckets during memory review:
 
 The rule of thumb: if a line does not change a future decision, remove it from push memory. If it changes one workflow, patch that workflow's skill. If it is a recurring check or timed follow-up, make it cron. If it needs recall but not every-turn steering, store it in pull memory, normally a profile-specific GBrain `hermes-memory` page or session-searchable history. Do not create a profile-local overflow file as a second memory layer.
 
-## 9. Evaluate compression tools before wiring them in
+## 9. Audit the cron fleet before optimizing it
+
+Before changing recurring jobs, run a read-only fleet audit. Do not let the audit pause, edit, remove, create, or run other jobs.
+
+For every active job, inspect:
+
+- purpose and prompt
+- schedule, delivery target, and recent execution history
+- failures, retries, and scheduler or provider errors
+- attached skills, enabled toolsets, context, and continuity settings
+- scripts, monitors, and change-detection behavior
+- model, provider, and reasoning configuration
+
+Apply cost controls in this order:
+
+1. Remove obsolete or duplicate work.
+2. Reduce the schedule to match urgency and source update frequency.
+3. Replace deterministic work with a script or `no_agent` job.
+4. Add monitoring or change detection when unchanged runs are wasteful.
+5. Narrow tools, skills, context, and continuity to the actual job.
+6. Lower reasoning effort or switch to a cheaper model only when judgment is still required.
+
+Before creating a recurring audit, check for an equivalent existing job. A cron job that audits cron jobs must not become another duplicate. Give it only read-only access, a low-traffic schedule, explicit toolsets, and a prompt that requires approval before any fleet mutation. Separate measured savings from estimates and show the proposed state, risks, rollback, and exact commands.
+
+Pin the model and provider for agent jobs when predictable behavior or cost matters. Treat unpinned jobs as a drift risk, not as permission to change global routing silently.
+
+## 10. Evaluate compression tools before wiring them in
 
 Tools like Headroom are promising because they compress tool outputs, logs, RAG chunks, and agent context before the LLM sees them. Do not wire them into Hermes globally by default.
 
