@@ -727,6 +727,18 @@ hermes -p <profile> chat -q "What profile are you and what channel behavior do y
 
 If callbacks/buttons/actions are used, smoke-test the full action, not just UI acknowledgment. A button disappearing does not prove the backend created the card, saved the note, or ran the action.
 
+### Use the current planning and side-task commands
+
+These commands work across the CLI, TUI, and supported gateway surfaces:
+
+```text
+/plan <task>      Inspect read-only and save an implementation plan under .hermes/plans/. Do not execute it.
+/bg <prompt>      Run a prompt in a separate background session.
+/btw <question>   Ask about the current conversation without interrupting the active turn.
+```
+
+`/plan` is a built-in command, not an installable skill. Use `/bg`, not the retired `/background` spelling. Use `/btw` for a bounded side question that needs the current conversation context.
+
 ---
 
 ## Configure cron jobs
@@ -752,6 +764,8 @@ hermes -p <profile> cron create "every monday 9am"
 Cron rules:
 
 - Prompt must be self-contained. Future jobs do not inherit the chat context.
+- Write one-shot relative schedules as `in 30m`, `in 2h`, or `in 1d`. A bare duration such as `30m` is recurring.
+- Natural schedules accept forms such as `weekdays at 9am`, named weekdays, and weekday lists.
 - Use `no_agent` scripts for deterministic watchdogs that should only speak on changes/errors.
 - Use scripts for data collection; use the agent for judgment/synthesis.
 - Keep no-op jobs silent.
