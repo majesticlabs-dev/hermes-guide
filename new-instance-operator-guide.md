@@ -747,12 +747,22 @@ Use Hermes cron for recurring work.
 
 ```bash
 hermes cron list
+hermes cron doctor
+hermes cron runs --limit 20
+hermes cron incidents
 hermes cron create "0 9 * * *"
 hermes cron run <job-id>
 hermes cron pause <job-id>
 hermes cron resume <job-id>
 hermes cron remove <job-id>
 ```
+
+Use `hermes cron doctor` as the first fleet health check. It reports failed runs,
+delivery failures, overdue or missing next-run times, invalid scripts, and missing
+working directories. Treat `delivery_failed` separately from task failure: the job
+may have produced a valid result that never reached its destination. A delivery
+marked `UNVERIFIED` succeeded without positive provider evidence and needs a
+read-back or destination check before you call it delivered.
 
 Profile-specific cron:
 
@@ -773,6 +783,7 @@ Cron rules:
 - For authenticated browser work, include login recovery inside the script; do not rely on a current interactive session.
 - Verify which profile owns the job before editing or removing it.
 - Cron jobs capture the model and provider at creation. If the global inference config later drifts, unpinned jobs are skipped automatically to prevent unintended spend; pin a job explicitly when its model matters: `hermes cron edit <job-id> --provider <provider> --model <model>`.
+- Run cron health commands for every profile that owns jobs. Root-profile health does not cover profile-local cron stores.
 
 Cron output and status are task evidence, not durable memory.
 
