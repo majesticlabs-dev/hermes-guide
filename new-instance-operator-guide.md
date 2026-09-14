@@ -429,7 +429,7 @@ librarian owns source intake and KB routing; it may process links and create KB 
 hermes profile create <profile> --clone
 ```
 
-Use `--clone` for config, `.env`, and SOUL.md only. Avoid `--clone-all` unless you intentionally want to copy sessions, memory, logs, and state.
+Use `--clone` for config, provider and tool credentials, SOUL.md, skills, and curated `MEMORY.md` and `USER.md` identity files. Sessions, state databases, cron jobs, and messaging channels stay behind. `--clone-all` adds other profile assets but still excludes history and cron jobs. Use `--clone-channels` only when sharing bot credentials is intentional and the source is not already served by a multiplexed gateway.
 
 Show the result:
 

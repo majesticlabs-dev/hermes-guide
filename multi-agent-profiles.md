@@ -29,9 +29,10 @@ hermes profile create vpmktg --clone
 ```
 
 Flags:
-- `--clone` copies config.yaml, .env, and SOUL.md from the active profile.
-- `--clone-all` does a full state copy (memories, sessions, logs, everything).
+- `--clone` copies config, provider and tool credentials, SOUL.md, skills, and the curated `MEMORY.md` and `USER.md` files. Sessions, cron jobs, and the state database start empty.
+- `--clone-all` copies the remaining profile assets too, but still excludes session history, state databases, backups, checkpoints, and cron jobs. Use `hermes profile export` or `hermes backup` when you need history and scheduled work.
 - `--clone-from SOURCE` lets you pick which profile to clone from instead of the active one.
+- Messaging channels are removed from every clone by default so two gateways do not compete for the same bot token. Use `--clone-channels` only when sharing those channels is intentional and the source is not already served by a multiplexed gateway.
 - `--no-alias` skips the wrapper script creation if you don't want one.
 
 ### Step 2: Write a Dedicated SOUL.md
@@ -376,7 +377,7 @@ These are the predictable ways a multi-profile setup degrades. Check for them mo
 
 ## Practical Notes
 
-- **Cloning copies everything except state.** `--clone` gives you config.yaml, .env, and SOUL.md from the source profile. `--clone-all` copies sessions, memories, and logs too. Usually `--clone` is what you want — clean state, inherited config.
+- **Clone identity without duplicating live channels.** `--clone` copies config, provider and tool credentials, SOUL.md, skills, and curated memory, while leaving sessions, state, cron jobs, and messaging channels behind. `--clone-all` adds other profile assets but still excludes history and cron jobs. Use `--clone-channels` only when duplicate channel credentials are intentional.
 - **Edit SOUL.md after cloning.** The cloned SOUL.md is a copy of the source profile's personality. Rewrite it immediately to match the new role.
 - **Config can differ per profile.** The writer might run on GLM-5.1 while vpmktg runs on GPT-5.4. Edit each profile's config.yaml independently.
 - **AGENTS.md is the shared brain.** Keep project-level knowledge in AGENTS.md, not in SOUL.md. SOUL.md is for identity, AGENTS.md is for context.
