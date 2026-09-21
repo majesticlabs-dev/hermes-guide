@@ -21,7 +21,7 @@ The pattern is simple: one Hermes install, multiple profiles, each a specialist.
 
 ### Step 1: Clone a Profile
 
-Create a new profile by cloning your existing one. This copies `config.yaml`, `.env`, and `SOUL.md` from the active profile as a starting point.
+Create a new profile by cloning your existing one. This copies its configuration, credentials, identity files, and skills as a starting point, while leaving history, scheduled jobs, and messaging channels behind.
 
 ```bash
 hermes profile create writer --clone
