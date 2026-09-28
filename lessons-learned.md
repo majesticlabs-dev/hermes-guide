@@ -97,7 +97,7 @@ When delegating work to a subagent (or a different model tier), don't just say "
 
 Vague handoffs produce vague results. Explicit handoffs produce targeted ones.
 
-**Implementation:** The `productivity/handoff-template` skill formalizes this into a reusable 5-section format. When a task is delegated to a subagent, the delegating agent should fill out the handoff template to ensure no context is lost. The skill lives at `~/.hermes/skills/productivity/handoff-template/`.
+**Implementation:** The `handoff` skill formalizes this into a reusable format: a compact verified pickup note with goal, context, constraints, expected output, and verification. When a task is delegated to a subagent, the delegating agent should fill out the handoff template to ensure no context is lost. In current Hermes installs the skill lives under `~/.hermes/skills/task-coordinator/handoff/`; older installs may still use `productivity/handoff-template`.
 
 ---
 
@@ -177,14 +177,14 @@ That's the loop: collect, score, review, improve. Everything else follows.
 
 ---
 
-## Process Discipline — Hard Rules (soul.md)
+## Process Discipline — Hard Rules
 
-The following five hard rules are codified in `~/.hermes/soul.md` under the Process Discipline section. They are not aspirational — they are enforced rules that the agent must follow:
+The following hard rules are codified in the operator profile's `SOUL.md` (for example, `~/.hermes/SOUL.md` for the default profile). They are not aspirational — they are enforced rules that the agent must follow:
 
 1. **PRD Gate:** No implementation code on multi-step tasks without a one-page PRD first.
 2. **Circuit Breaker:** Max 2 retries on the same failure, then escalate or change approach.
 3. **Failure Logging:** Every debugging session worth more than 15 minutes must be documented in `daily-logs/failures.md`.
 4. **Skill Health Tracking:** All skills must pass health checks. Failures are logged to `skill-health.log` and surfaced in the weekly scorecard.
-5. **Handoff Standard:** Every subagent delegation must use the handoff template (5-section format) to prevent context loss.
+5. **Handoff Standard:** Every subagent delegation must use the handoff skill's template to prevent context loss.
 
-These rules were added to soul.md so the agent treats them as core behavioral constraints, not optional guidelines.
+Codify rules like these in your profile's SOUL.md so the agent treats them as core behavioral constraints, not optional guidelines.
