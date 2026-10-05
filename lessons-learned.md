@@ -99,6 +99,8 @@ Vague handoffs produce vague results. Explicit handoffs produce targeted ones.
 
 **Implementation:** The `handoff` skill formalizes this into a reusable format: a compact verified pickup note with goal, context, constraints, expected output, and verification. When a task is delegated to a subagent, the delegating agent should fill out the handoff template to ensure no context is lost. In current Hermes installs the skill lives under `~/.hermes/skills/task-coordinator/handoff/`; older installs may still use `productivity/handoff-template`.
 
+A companion pattern covers implementation itself: a `task-coordinator` skill holds a portable acceptance-first contract (ownership, checkpoints, verification handoffs), a `plan-gate` skill runs it interactively with the human before code is written, and a `plan-review` skill applies the same checks autonomously before coding starts. The three are deliberately split: interactive review and autonomous review are different modes with different audiences, but both load one shared policy so acceptance criteria cannot drift between them. Name the acceptance commands and their prerequisites in the plan itself; if a required acceptance check cannot run, the plan is blocked, not "mostly ready."
+
 ---
 
 ## 9. Quality Gates Over Raw Autonomy
@@ -109,6 +111,7 @@ More autonomy is not better autonomy. Quality gates are checkpoints that prevent
 - **Test run** before marking a task complete
 - **Scorecard** before calling a session successful
 - **Cost check** before approving a heavy operation
+- **Collision check** when auto-registering skills as slash commands: a skill whose name collides with a core command should be skipped with a warning and an alternate invocation, not silently dropped or allowed to shadow the built-in
 
 Each gate catches a class of error that would otherwise propagate. The agent that passes all gates on the first try is better than the agent that moves fastest and breaks things.
 
