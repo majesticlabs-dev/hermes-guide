@@ -172,6 +172,30 @@ For recurring tool-use patterns, the [Signal-to-Skill Report](signal-to-skill-re
 
 ---
 
+## 13. Evidence Directories Can Break Backup Jobs
+
+If a backup script archives live working trees (for example, an agent home directory), any captured evidence directory containing its own git checkout becomes a failure point. Git refuses to walk a tree with a corrupted object store, and a single bad checkout fails the whole backup job (exit 128 from `git status` inside that directory).
+
+Defenses:
+
+- Before archiving a tree, exclude capture/evidence directories that contain their own `.git`, or copy them without version-control metadata.
+- If a backup job fails, reproduce the exact git command from the stderr in the failing directory first. A "backup failure" is often a git object-store corruption inside the data, not a backup-script bug.
+- Treat `git status` failing inside an archived checkout as a durability signal: the captured tree was incomplete or damaged at capture time.
+
+---
+
+## 14. Recovering External Python Helpers Without Breaking Environment Selection
+
+When a Hermes-managed dependency import works but an external helper fails importing application code, the cause is usually bootstrap and import-order interaction, not a missing package. Before reinstalling anything:
+
+1. Record `sys.executable`, `sys.prefix`, `sys.base_prefix`, and module provenance first. Tracebacks from generated `runpy`/`sys.path` shims can come from Hermes' own relaunch machinery rather than the helper.
+2. Inspect the bootstrap code: an import can refresh launchers or restart the process, so a "read-only" import is not necessarily side-effect free.
+3. Verify the existing selected interpreter and matching ABI from committed environment facts. Do not install packages because a replay on the wrong Python says they are missing, and never mix site-packages across Python versions.
+4. For a scope that forbids installs or relaunches, launch the helper with the existing selected venv interpreter, put the repository and that generation's matching site-packages on child `PYTHONPATH`, set process-local guards (such as disabling lazy installs), and unset conflicting variables like `PYTHONHOME`/`VIRTUAL_ENV`.
+5. Compare durable scheduler status with CLI exit codes: a repair command can exit zero while the underlying script failed. Exercise one real operation and read back its persisted evidence before declaring recovery.
+
+---
+
 ## The Meta-Lesson
 
 All of these lessons came from running the scorecard honestly and reviewing what went wrong. The scorecard didn't create these insights — the data did. The scorecard just made sure the data was collected and reviewed regularly.
