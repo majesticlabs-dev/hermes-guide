@@ -80,7 +80,7 @@ print(cfg.get('delegation', {}))
 PY
 ```
 
-Look for `delegation` enabled, `max_concurrent_children > 1`, `max_async_children > 1` if present, and a valid delegation model/provider. But if the agent only prints `delegate_task(...)` text, the problem is not config — the LLM instruction failed.
+Look for `delegation` enabled, `max_concurrent_children > 1`, `max_async_children > 1` if present, and a valid delegation model/provider. But if the agent only prints `delegate_task(...)` text, the problem is not config. The LLM instruction failed.
 
 ## 4. Verify before writing and before reporting done
 
@@ -141,7 +141,9 @@ Before installing a compression proxy or routing layer, apply the cheap controls
 
 ## 8. Keep push memory tiny and route lessons to skills
 
-Always-loaded memory, SOUL.md, CLAUDE.md, and AGENTS.md are expensive because they are injected into every session. Treat them as a hot steering layer, not an archive.
+Loaded memory and instruction files consume prompt budget. Keep agent memory compact, but distinguish it from project instructions: `AGENTS.md` is project-scoped policy, not an agent memory cache. Preserve project instructions rather than moving them into agent memory.
+
+When a context-truncation warning appears, identify the exact loaded path, current character count, and effective `context_file_max_chars` limit. Confirm the warning is current. If a larger supported limit is needed, propose the smallest change and verify full loader retention after approval; do not trim project rules to silence the warning.
 
 Use four buckets during memory review:
 
@@ -177,6 +179,15 @@ Apply cost controls in this order:
 Before creating a recurring audit, check for an equivalent existing job. A cron job that audits cron jobs must not become another duplicate. Give it only read-only access, a low-traffic schedule, explicit toolsets, and a prompt that requires approval before any fleet mutation. Separate measured savings from estimates and show the proposed state, risks, rollback, and exact commands.
 
 Pin the model and provider for agent jobs when predictable behavior or cost matters. Treat unpinned jobs as a drift risk, not as permission to change global routing silently.
+
+### Verify cron health across profiles
+
+Run `hermes cron list --all`, `hermes cron doctor`, and `hermes cron runs --limit 50` for the active profile. Discover the live roster with `hermes profile list`, then repeat relevant checks with `hermes -p PROFILE cron ...` using an actual profile name. A clean default-profile check does not cover specialist jobs.
+
+Read the latest retained failure artifact and the newest output for each affected job. Keep script execution, application outcome, delivery, and recovery separate: a completed script can report blocked work, a successful run can fail delivery, and an earlier failure can already have recovered. Verify backup jobs from their own execution records and output, not from a successful health audit.
+
+For `no_agent` jobs, stdout is the delivered report and may also be retained locally. Render readable summaries rather than raw JSON, keep private details out of delivery, and verify retention permissions before making privacy claims. For agent jobs, check auxiliary capabilities separately from primary chat: working chat authentication does not prove compression or vision works. Do not rotate credentials solely because an auxiliary resolver fails.
+
 
 ## 10. Evaluate compression tools before wiring them in
 
