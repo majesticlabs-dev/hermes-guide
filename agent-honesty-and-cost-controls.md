@@ -186,6 +186,10 @@ Run `hermes cron list --all`, `hermes cron doctor`, and `hermes cron runs --limi
 
 Read the latest retained failure artifact and the newest output for each affected job. Keep script execution, application outcome, delivery, and recovery separate: a completed script can report blocked work, a successful run can fail delivery, and an earlier failure can already have recovered. Verify backup jobs from their own execution records and output, not from a successful health audit.
 
+A backup can upload its archives successfully and still fail its final freshness check because the versioned asset mirror is stale. Report which stages succeeded and which failed; upload receipts alone do not establish a complete, restorable backup.
+
+If asset synchronization stops on conflicting managed-path edits, preserve the mirror's working tree and compare the conflicting paths with their live sources before proposing reconciliation. Do not reset, overwrite, or commit unrelated mirror edits to make the job green. Keep mirror reconciliation separate from changes to backup scripts, credentials, retention, or schedules, each with its own approval and verification.
+
 For `no_agent` jobs, stdout is the delivered report and may also be retained locally. Render readable summaries rather than raw JSON, keep private details out of delivery, and verify retention permissions before making privacy claims. For agent jobs, check auxiliary capabilities separately from primary chat: working chat authentication does not prove compression or vision works. Do not rotate credentials solely because an auxiliary resolver fails.
 
 
