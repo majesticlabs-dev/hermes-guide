@@ -6,9 +6,9 @@ Use this as the starting point before the narrower guides:
 
 - [`soul-md-example.md`](soul-md-example.md) for profile identity templates.
 - [`multi-agent-profiles.md`](multi-agent-profiles.md) for multiple specialized profiles.
-- [`gbrain-memory-plugin.md`](gbrain-memory-plugin.md) for local-first memory.
+- [`gbrain-memory-plugin.md`](gbrain-memory-plugin.md) for historical plugin distinctions and optional retrieval patterns.
 - [`installing-skills-from-url.md`](installing-skills-from-url.md) for installing individual skills.
-- [`workspace-autostart.md`](workspace-autostart.md) and [`cloudflare-tunnel.md`](cloudflare-tunnel.md) for always-on gateway/API setups.
+- [Official gateway documentation](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/) and [`cloudflare-tunnel.md`](cloudflare-tunnel.md) cover gateway/API setups. [`workspace-autostart.md`](workspace-autostart.md) is a legacy UI reference, not the current setup path.
 
 ---
 
@@ -84,7 +84,7 @@ Hard rule: the identity layer must match the tool layer. Do not tell a profile t
 ### 1. Install Hermes
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 ```
 
 Then start setup:
@@ -124,7 +124,7 @@ Use the provider login/auth flow when available:
 
 ```bash
 hermes login --provider <provider>
-hermes auth add
+hermes auth add <provider>
 hermes auth list
 ```
 
@@ -260,7 +260,7 @@ If a profile uses `.no-bundled-skills`, copy or install needed skills into that 
 
 ## Configure memory
 
-Hermes has several memory layers. Configure them intentionally. Keep native `MEMORY.md` and `USER.md` as small hot caches for every-turn steering. Put durable but low-frequency profile context into GBrain instead of creating a profile-local overflow file.
+Hermes has several memory layers. Configure them intentionally. Keep native `MEMORY.md` and `USER.md` as small hot caches for every-turn steering. Use an approved canonical document or retrieval store for durable low-frequency context. GBrain examples below are optional deployment conventions, not upstream requirements.
 
 ### Native memory
 
@@ -280,7 +280,7 @@ Named profiles keep their hot memory in profile-local files:
 ~/.hermes/profiles/<profile>/memories/MEMORY.md
 ```
 
-These files are the prompt-visible cache, not the archive. Durable low-frequency profile context belongs in a profile-specific GBrain page, for example `hermes/profile-memory-overflow/<profile>`.
+These files are the prompt-visible cache, not the archive. If the operator has separately configured GBrain, a profile-specific page such as `hermes/profile-memory-overflow/<profile>` is one possible durable destination. Otherwise use the approved local source of truth.
 
 Use native memory for:
 
@@ -315,20 +315,18 @@ hermes -p <profile> memory setup
 
 ### GBrain / pull memory
 
-Use GBrain for searchable, inspectable durable context that should not be injected into every turn. The active GBrain source is the canonical owner. Discover it instead of assuming a per-profile SQLite database:
+GBrain is optional, not a bundled Hermes provider or a prerequisite for native memory. The old standalone plugin linked here is archived and uses different identifiers; see [integration distinctions](gbrain-memory-plugin.md). The CLI/page examples below apply only to a separately installed GBrain deployment. Discover its source and interface instead of assuming a per-profile SQLite database:
 
 ```bash
 gbrain sources list
 hermes memory status
 ```
 
-Enable GBrain through Hermes when needed:
+Select an external memory provider only after installing and checking a compatible plugin:
 
 ```bash
 hermes memory setup
-# choose: gbrain, if available
-hermes config set memory.provider gbrain
-hermes -p <profile> config set memory.provider gbrain
+# Choose only a provider actually offered by the installed plugin.
 ```
 
 For hot-memory compaction, keep only every-turn steering in `MEMORY.md` and `USER.md`. Write the durable low-frequency remainder to a profile-specific `hermes-memory` page:
@@ -369,14 +367,7 @@ After changing the provider, restart the CLI or gateway.
 
 ### Backfill memory
 
-If a provider supports backfill, dry-run first:
-
-```bash
-python scripts/gbrain_backfill.py --dry-run
-python scripts/gbrain_backfill.py
-```
-
-Backfill should read existing memory and write deduplicated provider notes. It should not mutate the source memory markdown files.
+Current upstream has no `scripts/gbrain_backfill.py`. Use only the selected provider's documented migration procedure after testing it on a copy. Read back the destination before pruning source memory; never treat a missing legacy script as a supported upstream command.
 
 ### Memory quality rules
 
@@ -384,7 +375,7 @@ Use this decision rule:
 
 ```text
 Every-turn steering -> MEMORY.md / USER.md
-Durable low-frequency profile context -> profile-specific GBrain hermes-memory page
+Durable low-frequency profile context -> approved canonical store (optionally GBrain)
 Repeatable procedure -> skill
 Project facts -> AGENTS.md or project docs
 Durable task across profiles -> Kanban
@@ -782,7 +773,7 @@ Cron rules:
 - Deliver only useful states: start if needed, blocked, finished, changed.
 - For authenticated browser work, include login recovery inside the script; do not rely on a current interactive session.
 - Verify which profile owns the job before editing or removing it.
-- Cron jobs capture the model and provider at creation. If the global inference config later drifts, unpinned jobs are skipped automatically to prevent unintended spend; pin a job explicitly when its model matters: `hermes cron edit <job-id> --provider <provider> --model <model>`.
+- Cron model resolution happens at fire time: per-job pin → `cron.model` → the main agent model. Unpinned jobs follow changed defaults; they are not automatically skipped merely because the default changed. Pin explicitly when model/cost matters: `hermes cron edit <job-id> --provider <provider> --model <model>`, or `--pin` to lock the current main model. See [official cron docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron).
 - Run cron health commands for every profile that owns jobs. Root-profile health does not cover profile-local cron stores.
 
 Cron output and status are task evidence, not durable memory.
@@ -898,7 +889,7 @@ Expected:
 - no cloned stale identity remains
 - tools match SOUL.md claims
 - role-specific skills are installed
-- memory hot cache is profile-local unless intentionally shared; durable low-frequency profile context belongs in a profile-specific GBrain page
+- memory hot cache is profile-local unless intentionally shared; durable low-frequency context has an approved canonical destination
 - handoff command uses `hermes -p <profile> chat -q`, not an invalid profile command
 
 ### Gateway
@@ -949,7 +940,7 @@ For a brand-new operator instance:
 
 ```bash
 # install and health check
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 hermes setup
 hermes doctor
 

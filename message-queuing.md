@@ -12,24 +12,25 @@ Controls what happens when a new user message arrives while the agent is still p
 
 ```yaml
 display:
-  busy_input_mode: queue   # or interrupt
+  busy_input_mode: queue   # or interrupt (default), or steer
 ```
 
 ### Modes
 
 | Mode | Behavior |
 |------|----------|
-| `interrupt` | **Default.** Kills the current agent run immediately and starts processing the new message. Any in-progress work from the interrupted run is lost. |
-| `queue` | Waits for the current agent run to finish, then processes the queued message sequentially. No work is lost. |
+| `interrupt` | **Default.** On current messaging gateways, redirects the active turn to the follow-up; a foreground terminal command can move to the background rather than being killed. |
+| `queue` | Processes follow-ups as later turns after the current task. It is not a durability or eventual-delivery guarantee. |
+| `steer` | Injects text into the active run after the next tool call; falls back to queue if the agent has not started. Attachments are queued, not reduced to text steering. |
 
-### Current Setting
+### Example Setting
 
 ```yaml
 display:
   busy_input_mode: queue
 ```
 
-This is set to `queue` because rapid Telegram messages (especially on mobile) would otherwise interrupt long agent runs mid-task. With `queue`, messages are held and processed one at a time in order.
+An operator may choose `queue` because rapid Telegram messages (especially on mobile) would otherwise interrupt long agent runs mid-task. With `queue`, messages are held and processed one at a time in order.
 
 ### When to Use Each Mode
 
@@ -46,7 +47,7 @@ Telegram has built-in message batching that coalesces rapid messages before they
 
 When multiple text messages arrive in quick succession, Hermes waits briefly to merge them into a single input:
 
-- **Default window:** 0.6 seconds
+- **Current adaptive defaults:** short messages use shorter delays; the configured text delay defaults to 1.5 seconds, and near-split continuations use a 2.0-second split delay. These are quiet windows, not a fixed timer from the first message.
 - **Env var:** `HERMES_TELEGRAM_TEXT_BATCH_DELAY_SECONDS`
 - **Split delay env var:** `HERMES_TELEGRAM_TEXT_BATCH_SPLIT_DELAY_SECONDS`
 
@@ -67,10 +68,10 @@ Add to `~/.hermes/.env`:
 
 ```bash
 # Text batching — how long to wait for more text messages before processing (seconds)
-HERMES_TELEGRAM_TEXT_BATCH_DELAY_SECONDS=0.6
+HERMES_TELEGRAM_TEXT_BATCH_DELAY_SECONDS=1.5
 
-# Text batch split delay — additional delay between batch segments
-HERMES_TELEGRAM_TEXT_BATCH_SPLIT_DELAY_SECONDS=0.0
+# Longer quiet window for likely split continuations (not an extra inter-segment sleep)
+HERMES_TELEGRAM_TEXT_BATCH_SPLIT_DELAY_SECONDS=2.0
 
 # Media batching — how long to wait for more photos before processing (seconds)
 HERMES_TELEGRAM_MEDIA_BATCH_DELAY_SECONDS=0.8
@@ -83,18 +84,16 @@ Increase the delays if you find messages aren't being grouped (user types slowly
 ## How They Work Together
 
 ```
-User sends message 1 → agent starts processing
-User sends message 2 (0.3s later) → text batch window absorbs it
-User sends message 3 (0.5s later) → text batch window absorbs it
-  └─ 0.6s after message 1: batch closes, merged input queued
-Agent finishes current run → queued batch is processed next
+Rapid eligible text chunks → adapter waits for an adaptive quiet window → one merged input
+Agent already busy → selected queue / interrupt / steer policy handles the follow-up
+Photo burst → album batching → one media input
 ```
 
 The combination means:
 
 1. **Batching** merges rapid-fire messages into coherent single inputs.
 2. **Queue mode** ensures the agent finishes what it's doing before picking up the next batch.
-3. Neither feature loses messages — everything gets processed eventually.
+3. Batching is distinct from busy-input handling. Check actual ingress and execution evidence; neither setting proves delivery or protects against every failure/reset.
 
 ---
 
@@ -105,9 +104,11 @@ Telegram rich messages let Hermes send final replies through Telegram's native `
 Enable it per Hermes profile in that profile's `config.yaml`:
 
 ```yaml
-telegram:
-  extra:
-    rich_messages: true
+gateway:
+  platforms:
+    telegram:
+      extra:
+        rich_messages: true
 ```
 
 For the default profile, edit `~/.hermes/config.yaml`. For named profiles, edit `~/.hermes/profiles/<profile>/config.yaml`.
@@ -116,8 +117,7 @@ After changing a running profile, restart that profile's gateway:
 
 ```bash
 hermes gateway restart
-hermes -p librarian gateway restart
-hermes -p steph gateway restart
+hermes -p <profile> gateway restart
 ```
 
 ### Rich Message Test Prompt
@@ -135,7 +135,7 @@ Format this as:
 - collapsible details section for risks
 ```
 
-Expected result: Telegram renders the table, checklist, and collapsible risks section natively. If a Telegram client renders rich messages poorly, roll back by setting `telegram.extra.rich_messages: false` and restarting the affected gateway.
+Expected result on a compatible client/API: Telegram renders eligible rich constructs natively. Hermes may fall back to MarkdownV2 on rejection; CJK rich rendering has a separate opt-in. Verify on the actual client. If a Telegram client renders rich messages poorly, roll back by setting `gateway.platforms.telegram.extra.rich_messages: false` and restarting the affected gateway.
 
 ---
 
@@ -158,7 +158,7 @@ for cfg in configs:
     if cfg.exists():
         profile = 'default' if cfg.parent == root else cfg.parent.name
         data = yaml.safe_load(cfg.read_text()) or {}
-        enabled = data.get('telegram', {}).get('extra', {}).get('rich_messages')
+        enabled = data.get('gateway', {}).get('platforms', {}).get('telegram', {}).get('extra', {}).get('rich_messages')
         print(f'{profile}: {enabled}')
 PY
 
@@ -168,10 +168,16 @@ PY
 
 ---
 
+## Sources
+
+- [Messaging busy-input behavior](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/#queue-vs-interrupt-vs-steer-busy-input-mode)
+- [Telegram rendering](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/telegram#rendering-rich-messages-tables-and-link-previews)
+- Upstream `plugins/platforms/telegram/adapter.py` (`_TEXT_BATCH_DEFAULT_DELAY_S`, `_TEXT_BATCH_DEFAULT_SPLIT_DELAY_S`, `_text_batch_delay_for`) at `4429693a62f784b5f2bd3c7f773c154be97b0d98`.
+
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `~/.hermes/config.yaml` | `display.busy_input_mode` and default-profile `telegram.extra.rich_messages` settings |
-| `~/.hermes/profiles/<profile>/config.yaml` | Named-profile `telegram.extra.rich_messages` setting |
+| `~/.hermes/config.yaml` | `display.busy_input_mode` and default-profile `gateway.platforms.telegram.extra.rich_messages` settings |
+| `~/.hermes/profiles/<profile>/config.yaml` | Named-profile `gateway.platforms.telegram.extra.rich_messages` setting |
 | `~/.hermes/.env` | `HERMES_TELEGRAM_TEXT_BATCH_DELAY_SECONDS`, `HERMES_TELEGRAM_TEXT_BATCH_SPLIT_DELAY_SECONDS`, `HERMES_TELEGRAM_MEDIA_BATCH_DELAY_SECONDS` |

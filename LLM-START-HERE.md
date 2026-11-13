@@ -44,21 +44,21 @@ This index covers every file tracked in the repository. Local-only and ignored f
 - [`extending-gateway-api.md`](extending-gateway-api.md) — Adding gateway API endpoints, middleware, and features.
 - [`installing-skills-from-url.md`](installing-skills-from-url.md) — Installing and updating skills from hosted Markdown URLs.
 - [`message-queuing.md`](message-queuing.md) — Busy-input behavior, Telegram batching, and rich-message rendering.
-- [`python-uv-venv.md`](python-uv-venv.md) — Running Hermes from a uv-managed Python virtual environment.
-- [`telegram-miniapp-setup.md`](telegram-miniapp-setup.md) — Deploying the Telegram Mini App with a standalone proxy, tunnel, authentication, and gateway API.
+- [`python-uv-venv.md`](python-uv-venv.md) — Current PM-managed Python/runtime selection and source activation; old uv/venv setup superseded.
+- [`telegram-miniapp-setup.md`](telegram-miniapp-setup.md) — Historical custom Mini App notes; incomplete standalone proxy, not a ready-to-run deployment guide.
 - [`workspace-autostart.md`](workspace-autostart.md) — Legacy Hermes Workspace launchd and gateway-auth reference; the selected interface is now [nesquena/hermes-webui](https://github.com/nesquena/hermes-webui).
 - [`xurl.md`](xurl.md) — Installing, authenticating, verifying, and using the X Developer Platform CLI.
 
 ### Models, routing, and coordination
 
-- [`model-tier-rankings.md`](model-tier-rankings.md) — Model rankings by Hermes role and workload.
-- [`tiered-model-routing.md`](tiered-model-routing.md) — Delegate-first routing across reasoning, budget, specialist, local, and fallback lanes.
+- [`model-tier-rankings.md`](model-tier-rankings.md) — Archived April 2026 evaluations and retired fleet policy, not current rankings or prices.
+- [`tiered-model-routing.md`](tiered-model-routing.md) — Default delegation versus optional model-map/profile-route strategies; no active private fleet lane table.
 
 ### Memory, context, skills, and operating discipline
 
 - [`agent-honesty-and-cost-controls.md`](agent-honesty-and-cost-controls.md) — Guardrails for uncertainty, real tool use, verification, memory hygiene, and token costs.
 - [`daily-context-questions.md`](daily-context-questions.md) — Scheduled prompts for gradually capturing durable personal context.
-- [`gbrain-memory-plugin.md`](gbrain-memory-plugin.md) — GBrain pull-memory routing, profile-specific durable context pages, active-source discovery, legacy plugin notes, setup, privacy, and verification.
+- [`gbrain-memory-plugin.md`](gbrain-memory-plugin.md) — Historical archived-plugin notes, changed identifiers, and distinctions from optional GBrain CLI/catalog integrations; not a bundled-provider setup guide.
 - [`hermes-dreaming-plugin.md`](hermes-dreaming-plugin.md) — Background memory consolidation with review, audit, and safety controls.
 - [`lessons-learned.md`](lessons-learned.md) — Field-tested operating rules, failure lessons, quality gates, and improvement loops.
 - [`q100-taste-interview.md`](q100-taste-interview.md) — Structured 100-question protocol for extracting voice, taste, and aesthetic preferences.
@@ -69,7 +69,7 @@ This index covers every file tracked in the repository. Local-only and ignored f
 ### Evaluations and implementation plans
 
 - [`agent-native-toolbelt-plan.md`](agent-native-toolbelt-plan.md) — Plan for turning repeated agent workflows into deterministic local CLIs and compound commands.
-- [`miniapp-standalone-proxy-plan.md`](miniapp-standalone-proxy-plan.md) — Implementation plan for decoupling Telegram Mini App support from Hermes core.
+- [`miniapp-standalone-proxy-plan.md`](miniapp-standalone-proxy-plan.md) — Historical incomplete proposal for decoupling Telegram Mini App support; missing full server implementation.
 - [`pageindex-evaluation.md`](pageindex-evaluation.md) — Evaluation of PageIndex architecture, capabilities, and Hermes integration tradeoffs.
 
 ### Repository support

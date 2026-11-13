@@ -4,13 +4,13 @@ How to use 1Password with Hermes Agent for secure credential management.
 
 ## Setup
 
-Hermes uses a 1Password Service Account token stored in `~/.hermes/.env`:
+This optional operator example stores a 1Password Service Account token under a custom name in `~/.hermes/.env`; it is not a required Hermes credential or built-in automatic mapping:
 
 ```bash
 ONE_PASSWORD_API_KEY=[REDACTED]
 ```
 
-The `op` CLI (v2+) reads this as `OP_SERVICE_ACCOUNT_TOKEN`.
+The `op` CLI (v2+) expects `OP_SERVICE_ACCOUNT_TOKEN`. The custom `ONE_PASSWORD_API_KEY` name only works if an approved wrapper explicitly maps it, as in the example below. Do not print secret-bearing output into an agent transcript.
 
 ## Using op CLI with Hermes
 

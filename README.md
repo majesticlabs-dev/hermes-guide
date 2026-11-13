@@ -2,16 +2,16 @@
 
 Practical guides for setting up and extending Hermes Agent.
 
-## Operator, Not Builder
+## An Operator-Focused Guide
 
-Hermes is not a Builder. Hermes is an Operator.
+This Guide emphasizes recurring operator workflows. That is a role choice, not a product limitation: Hermes can also build software and perform one-shot coding tasks. See the [official overview](https://hermes-agent.nousresearch.com/docs).
 
 - **Builders** create one-off artifacts: dashboards, static sites, prototypes, one-shot scripts.
 - **Operators** run recurring work: briefings, alerts, scheduled reports, monitoring, memory maintenance, skill execution, escalation handling.
 
 The pattern: a builder creates the surface, Hermes operates the workflow. Example: Claude builds a dashboard — Hermes runs daily analysis against it and sends the brief. Another agent writes a script — Hermes schedules it, monitors it, and escalates on failure.
 
-If the task is "make me a thing," route to a builder. If the task is "keep this running," "watch for this," or "tell me when," that's Hermes.
+Choose direct execution or specialist handoff based on the active profile's scope and tools, not a blanket rule that Hermes cannot build. Recurring work is the emphasis here.
 
 ## Start Here
 
@@ -20,7 +20,7 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 - [SOUL.md Example](soul-md-example.md) — Public-safe templates for profile-level agent behavior: role, tone, tool rules, approval gates, quality bar, and the boundary between SOUL.md, AGENTS.md, memory, and skills.
 - [Copy-Ready Public SOUL.md](SOUL.md) — Compact, sanitized operator profile that can be copied into a Hermes installation and adapted without exposing private runtime details.
 - [Multi-Agent Profiles](multi-agent-profiles.md) — How to run multiple specialized Hermes agents with isolated profiles, dedicated SOUL.md files, shared AGENTS.md, and separate invocation via `hermes -p NAME` or wrapper scripts.
-- [GBrain Memory Plugin](gbrain-memory-plugin.md) — GBrain pull-memory provider for Hermes, including profile-specific durable context pages, active-source discovery, the legacy standalone plugin notes, setup commands, privacy notes, and verification guidance.
+- [GBrain Memory Plugin](gbrain-memory-plugin.md) — Historical standalone-plugin design, archived-source/identifier changes, and distinctions from optional GBrain CLI or catalog integrations. Not a bundled-provider install guide.
 - [Hermes Dreaming Plugin](hermes-dreaming-plugin.md) — Background memory consolidation for Hermes, including `hermes plugins install alejandroiglesias/hermes-dreaming`, review/run commands, audit files, and safety notes for memory-mutating workflows.
 - [Installing Skills from a URL](installing-skills-from-url.md) — How to install a Hermes skill directly from any `.md` URL, including Gists and raw hosted skill files, then refresh it later with `hermes skills update`.
 - [Recommended Skills to Install](skills-to-install.md) — Profile-specific list of external/community skills worth adding, including `last30days` and its target profiles.
@@ -32,9 +32,9 @@ If the task is "make me a thing," route to a builder. If the task is "keep this 
 - [Message Queuing, Telegram Batching & Rich Messages](message-queuing.md) — How `display.busy_input_mode` (`interrupt` vs `queue`) controls what happens when the agent is busy, plus Telegram-specific text/media batching and native rich-message rendering.
 - [Cloudflare Tunnel](cloudflare-tunnel.md) — How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 - [1Password CLI](1password-cli.md) — Using 1Password with Hermes Agent for secure credential management.
-- [Python Environment with uv + venv](python-uv-venv.md) — How to run Hermes from a uv-managed virtualenv, fix `hermes doctor` warnings about global Python, and make shell `hermes` resolve to the venv.
-- [Telegram Mini App Setup](telegram-miniapp-setup.md) — Full walkthrough for deploying the Hermes Telegram Mini App with standalone proxy architecture, Cloudflare Tunnel, auth, and the gateway API.
-- [Mini App Standalone Proxy Plan](miniapp-standalone-proxy-plan.md) — Detailed implementation plan for a standalone mini-app proxy that decouples mini-app support from Hermes core.
+- [Python Environment with uv + venv](python-uv-venv.md) — Current PM-managed runtime and source-development workflow; replaces the obsolete hardcoded uv/venv launcher recipe.
+- [Telegram Mini App Setup](telegram-miniapp-setup.md) — Historical custom architecture and troubleshooting; incomplete proxy implementation, not a ready-to-run deployment guide.
+- [Mini App Standalone Proxy Plan](miniapp-standalone-proxy-plan.md) — Historical, incomplete design proposal for decoupling mini-app support from Hermes core; no complete server is supplied.
 - [Extending the Gateway API](extending-gateway-api.md) — How to add new endpoints, middleware, and features to the Hermes API server.
 
 ## Daily Operator Surfaces
@@ -51,8 +51,8 @@ Official docs: [Browser Automation](https://hermes-agent.nousresearch.com/docs/u
 
 ## Routing, Models, and Coordination
 
-- [Model Tier Rankings](model-tier-rankings.md) — Best LLM models for Hermes Agent by role (orchestrator, executor, auxiliary), based on community testing and fleet experience.
-- [Tiered Model Routing](tiered-model-routing.md) — How to configure delegate-first routing with high-reasoning, budget, specialist, local, and fallback lanes.
+- [Model Tier Rankings](model-tier-rankings.md) — Archived April 2026 community evaluations and retired fleet choices, not current model recommendations or pricing.
+- [Tiered Model Routing](tiered-model-routing.md) — Current default delegation versus optional model-map/profile-route strategies, explicit approval and verification; no private fleet defaults.
 
 ## Research, Memory, and Context Extraction
 
@@ -67,14 +67,14 @@ Official docs: [Browser Automation](https://hermes-agent.nousresearch.com/docs/u
 
 ## Operational Monitoring
 
-Hermes runs automated weekly jobs that measure and maintain operational health. Data is collected from:
+The following files and schedules describe a historical custom operator setup. They are not upstream defaults, and this repository does not install the scripts or jobs. Verify a live installation before treating any as active. Example data sources:
 
 - `~/.hermes/skill-health.log` — skill health check results
 - `~/.hermes/cost-log.csv` — per-task cost tracking (schema defined, auto-population blocked — see Lessons Learned)
 - `~/.hermes/daily-logs/failures.md` — documented failures
 - `~/.hermes/scorecards/` — historical scorecard results
 
-### Weekly Cron Schedule
+### Historical Example Cron Schedule
 
 | Time | Job | Script |
 |------|-----|--------|

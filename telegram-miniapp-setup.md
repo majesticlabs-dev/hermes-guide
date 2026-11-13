@@ -1,6 +1,8 @@
-# Hermes Telegram Mini App — Setup Guide
+# Hermes Telegram Mini App — Historical Custom Setup Notes
 
-A complete walkthrough for deploying the Hermes Telegram Mini App. This guide covers everything from scratch, including every error we hit and how we fixed it.
+> **Status: incomplete custom integration, not a current from-scratch setup guide.** This repository contains neither the full standalone proxy nor the local health-check/scorecard scripts used below. The linked proxy plan includes placeholder middleware, not complete handler code. Keep these notes for architecture and troubleshooting history; do not deploy the snippets without implementing and testing authentication, replay/freshness checks, authorization, file containment, and streaming. See [current stock API docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server).
+
+A record of an operator-specific Telegram Mini App design and earlier setup errors. It does not establish that this stack is currently installed or compatible with every Hermes release.
 
 ## What You'll End Up With
 
@@ -10,7 +12,7 @@ A complete walkthrough for deploying the Hermes Telegram Mini App. This guide co
 - System monitoring
 - Ed25519 authentication (no API key exposed to clients)
 
-## Architecture (Current — Standalone Proxy)
+## Historical Architecture — Standalone Proxy
 
 The mini app runs through a **standalone proxy on port 8643** that sits between Cloudflare and the stock Hermes gateway. Hermes is never modified and can be updated freely.
 
@@ -55,7 +57,7 @@ Hermes Gateway (localhost:8642)            <-- UNMODIFIED STOCK
 - A Telegram bot (created via @BotFather)
 - `cloudflared` CLI installed and authenticated
 - A domain/subdomain you control (for Cloudflare Tunnel)
-- Python package `pynacl` for Ed25519 verification (already in Hermes venv)
+- A separately verified proxy environment and dependencies, including `pynacl` if using Ed25519; do not assume a current Hermes venv contains it
 
 ---
 
@@ -90,13 +92,14 @@ Add these to `~/.hermes/.env`:
 TELEGRAM_BOT_TOKEN=[REDACTED]
 TELEGRAM_OWNER_ID=<numeric-user-id>
 TELEGRAM_ALLOWED_USERS=<numeric-user-id>
-API_SERVER_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
+API_SERVER_ENABLED=true
+API_SERVER_KEY=<securely-generated-literal-value>
 
-# CRITICAL — without this, the mini app gets 403 on every request
-API_SERVER_CORS_ORIGINS=*
+# Only for direct cross-origin browser access; configure the proxy separately.
+# API_SERVER_CORS_ORIGINS=https://<allowed-browser-origin>
 ```
 
-**Common mistake:** `TELEGRAM_OWNER_ID` is a number, not your username.
+**Common mistakes:** `TELEGRAM_OWNER_ID` is a number, not your username. A dotenv file does not execute shell command substitution: generate a secret through an approved local mechanism and store the literal value without logging it.
 
 Generate the API key:
 ```bash
@@ -115,7 +118,8 @@ The server can verify Telegram auth two ways:
 Install `pynacl` if you want the Ed25519 path available:
 
 ```bash
-pip install pynacl
+# Provision pynacl in the separate proxy environment through its approved dependency workflow.
+# Do not mutate a current PM-owned Hermes environment with raw pip.
 ```
 
 If you skip it, the mini app can still work via the HMAC fallback as long as `TELEGRAM_BOT_TOKEN` is set correctly.
@@ -173,7 +177,7 @@ Instead of patching Hermes core files (which get overwritten on every update), t
 
 ### 6A. Create the Proxy
 
-The proxy is a single Python file using aiohttp. It uses the Hermes venv Python which already has all required dependencies.
+The proxy is a single Python file using aiohttp. Its interpreter and dependencies must be selected and verified independently; current Hermes does not promise the old `venv/bin/python` layout.
 
 ```bash
 mkdir -p ~/.hermes/miniapp-proxy
@@ -201,7 +205,7 @@ Create `~/.hermes/miniapp-proxy/proxy.py` — the full implementation (~350 line
 
 6. **Proxy fallback** — Any unmatched route forwards to `http://127.0.0.1:8642` with translated auth headers, streaming SSE responses back chunk-by-chunk (critical for `/v1/chat/completions`).
 
-> See `miniapp-standalone-proxy-plan.md` in this guide directory for the full implementation plan, including the complete handler code.
+> See [the historical proxy proposal](miniapp-standalone-proxy-plan.md) for design details only. It contains stub middleware and a handler inventory, not the complete server implementation.
 
 ### 6B. Install as a launchd Service
 
@@ -352,10 +356,7 @@ cat ~/.hermes/logs/gateway.error.log
 
 **Cause:** CORS middleware rejects requests when `API_SERVER_CORS_ORIGINS` is not set. The Telegram WebApp sends an `Origin` header, and without configured origins, the server blocks it.
 
-**Fix:** Add to `.env`:
-```bash
-API_SERVER_CORS_ORIGINS=*
-```
+**Current guidance:** Identify which layer rejected the origin. Allow the actual browser origin explicitly at that layer; a same-origin frontend/proxy and server-to-server upstream need not use wildcard CORS. CORS is not authentication.
 
 ### 403 on OPTIONS Preflight
 
@@ -545,7 +546,7 @@ Each run produces a timestamped file so you can track trends over time.
 
 ### Weekly Cron Job
 
-The scorecard runs automatically every Monday at 10am via cron. This ensures consistent measurement without relying on manual discipline.
+The original operator scheduled this custom scorecard for Monday at 10am. Hermes does not install that script or schedule by default. Verify the actual cron store before describing it as active.
 
 ### How to Run Manually
 
@@ -563,7 +564,7 @@ The scorecard exists because self-congratulation is a trap. The first score of 1
 
 ## Operational Scripts & Weekly Cron Jobs
 
-Beyond the scorecard itself, two automated scripts run on a weekly schedule to keep the system healthy.
+The following custom scripts and schedules describe the historical operator setup, not upstream bundled automation. This repository does not supply their implementations.
 
 ### Signal-to-Skill Pipeline
 

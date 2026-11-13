@@ -1,8 +1,10 @@
-# Mini App Standalone Proxy — Implementation Plan
+# Mini App Standalone Proxy — Historical Implementation Proposal
+
+> **Status: incomplete custom design, not an installed or verified service.** This repository does not supply the full `proxy.py` implementation or frontend, and the middleware below is explicitly a stub. Do not execute this plan as a deployment runbook. The topology and endpoint inventory are historical design material; compare current [stock API docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server) before implementation. Telegram signature validation, freshness/replay checks, authorization, static-path containment, SSE, and CORS require independent implementation and acceptance tests.
 
 ## Problem
 
-Hermes updates overwrite `gateway/platforms/api_server.py`, wiping out custom mini-app routes (static serving, Telegram auth, `/api/commands`, `/api/model-info`, etc.). The current gateway on 8642 returns 404 for every mini-app endpoint except `/health` and the built-in `/v1/*` and `/api/jobs/*` routes.
+Hermes updates overwrite `gateway/platforms/api_server.py`, wiping out custom mini-app routes (static serving, Telegram auth, `/api/commands`, `/api/model-info`, etc.). The original observed gateway on 8642 returned 404 for every mini-app endpoint except `/health` and the built-in `/v1/*` and `/api/jobs/*` routes.
 
 ## Architecture
 
@@ -71,6 +73,8 @@ The mini app (`~/.hermes/miniapp/index.html`, line 825: `const API = window.loca
 | `/v1/responses*` | various | Yes | Responses API (stock) |
 | `/v1/runs*` | various | Yes | Run streaming (stock) |
 | `/health/detailed` | GET | No | Rich status (stock) |
+
+**Historical/current boundary:** The stock upstream route table and CORS policy must be checked separately from this proposed proxy.
 
 **Note on PATCH**: The stock CORS config only allows `GET, POST, DELETE, OPTIONS` and does NOT list `PATCH`. The proxy must add PATCH to CORS Allow-Methods for `/api/jobs` PATCH calls to work.
 
@@ -328,7 +332,7 @@ launchd service definition to run the proxy on port 8643 at login.
 </plist>
 ```
 
-Uses the Hermes venv Python (`/Users/<user>/.hermes/hermes-agent/venv/bin/python`) which already has aiohttp 3.13.5 and pynacl installed. No extra pip installs needed.
+This hardcoded venv path and dependency inventory belonged to the original deployment. Current Hermes uses PM-managed environments; do not assume that venv exists or that `pynacl` is installed. See [current environment guidance](python-uv-venv.md).
 
 ---
 
@@ -485,7 +489,7 @@ Hermes on 8642 still serves the workspace UI and other API clients directly. The
 
 ### Why use the Hermes venv Python?
 
-The Hermes venv (`~/.hermes/hermes-agent/venv/bin/python`) already has aiohttp 3.13.5 and pynacl. No additional pip installs. The proxy can also import Hermes modules (hermes_cli.commands, tools.process_registry) directly.
+This was a historical dependency assumption, not a current contract. A separate proxy needs its own approved environment and verified dependencies; current Hermes uses PM-managed environments.
 
 ### What about the `/api/commands` and `/api/model-info` imports?
 
@@ -493,7 +497,7 @@ The proxy adds `~/.hermes/hermes-agent` to `sys.path` so it can import:
 - `hermes_cli.commands.COMMAND_REGISTRY` for the commands list
 - `tools.process_registry.process_registry` for the processes list
 
-These are stable internal APIs that rarely change between Hermes versions. If they do, only the proxy needs updating — not the core gateway.
+These are version-coupled internal APIs, not a stable public extension contract. Verify each import and behavior against the selected Hermes revision.
 
 ### What about `/api/command` dispatch?
 
@@ -501,16 +505,16 @@ This is the trickiest endpoint. The proxy needs to execute slash commands (like 
 
 **Option A (recommended):** Import and call the command handler directly from Hermes modules. This is synchronous code running in the proxy's event loop — use `asyncio.to_thread()` to avoid blocking.
 
-**Option B (simpler fallback):** Send the command as a chat message through `/v1/chat/completions` with a system hint. The agent processes it naturally. Less structured but always works.
+**Option B (not equivalent):** A chat message through `/v1/chat/completions` is agent input, not guaranteed slash-command dispatch. Do not use it as a reliable command fallback; implement and test an explicit command contract.
 
-Start with Option A, fall back to B if imports break after an update.
+Use an explicitly tested command-dispatch contract. If imports break after an update, stop command execution rather than silently treating chat input as equivalent.
 
 ### CORS details
 
 The stock gateway's `_CORS_HEADERS` (line 236-239 of api_server.py) lacks:
 - `PATCH` in Allow-Methods (breaks `/api/jobs/{id}` PATCH calls)
 - `X-Telegram-Init-Data` in Allow-Headers (breaks Telegram auth)
-- `X-Hermes-Session-Id` in Allow-Headers (breaks session continuity)
+- Historical note only: current stock headers already include `X-Hermes-Session-Id`; do not diagnose it as missing.
 
 The proxy sets its own CORS headers that include all of these. For proxied requests, the proxy strips its CORS headers and lets the response pass through, but also patches in the correct CORS headers if Hermes's are insufficient.
 

@@ -68,7 +68,7 @@ Agents spend tokens fast. Without per-task cost logging, you only notice the bil
 - Which model was used
 - Whether the spend was justified
 
-**Status:** Backlogged as a future improvement. Currently blocked — there is no hook mechanism in the gateway to intercept requests and log costs automatically. The cost-log.csv schema exists, but population requires either a gateway middleware hook or manual discipline, neither of which is wired up yet.
+**Historical status:** This operator's custom `cost-log.csv` population was backlogged. That is not a current Hermes limitation: upstream now documents shell/plugin hooks including `pre_llm_call` and `post_llm_call`, and session usage tracking. A custom per-task CSV pipeline still needs its own approved implementation and verification. See [official hooks](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks); do not infer that this old CSV job is installed or active.
 
 If you don't track cost, you can't optimize routing. And bad routing is the biggest waste in a tiered model system.
 

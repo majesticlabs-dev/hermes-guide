@@ -1,4 +1,6 @@
-# Model Tier Rankings for Hermes Agent
+# Historical Model Evaluations — April 2026
+
+> **Archived snapshot, not current setup advice.** The rankings, prices, provider availability, and community anecdotes below were recorded in April 2026 and have not been re-benchmarked. They are not Hermes defaults, a current price list, or the operator's active model policy. Capability guarantees and vendor-regression theories are unverified community opinions. Use [current routing guidance](tiered-model-routing.md) and official provider information before making a model or cost decision.
 
 **Last updated:** April 2026  
 **Source:** BoxminingAI community testing (1 month real-world Hermes usage), plus local fleet experience.
@@ -60,12 +62,12 @@ Trained on the OpenClaw agent harness framework (same lineage as Hermes). Thinks
 **Caveat:** Do NOT use as orchestrator. Give it a plan, not a blank slate.
 
 ### GLM 5.1 — "Context Recovery Champion"
-Excellent at complex coding (one-shotted a space shooter game that Opus 4.7 failed). Best-in-class context recovery after auto-compaction events — remembers the important stuff when other models forget. One-line fleet-wide model switch via `config.yml`.
+The original evaluation reported strong coding and post-compaction context recovery, including a successful game-generation anecdote. These are historical observations, not a controlled comparison. Hermes configuration is profile-local `config.yaml`; it does not provide an automatic fleet-wide model switch.
 
 **Use for:** Complex coding, server fleet management, long sessions with compaction, default fleet executor.
 
 ### Nemotron 3 Super — "Open-Weight Dev Specialist"
-Explicitly trained for coding agents, terminal use, and software engineering benchmarks. Open-weight — can be self-hosted, no API rate limits, no data privacy concerns. Stays on task across many tool calls without losing context.
+The original evaluation recommended it for coding agents and self-hosted workflows. Self-hosting can avoid a hosted provider's quota, but does not remove hardware limits, tool/network exposure, or data privacy risks.
 
 **Use for:** Pro developers who know what they're doing, self-hosted pipelines, privacy-sensitive workflows.
 
@@ -77,7 +79,7 @@ Natively integrates a scalable RL framework. When paired with Hermes' Atropos RL
 **Use for:** RL self-improvement loops, agent training rollouts.
 
 ### DeepSeek V3.2 — "Cron Reliability Specialist" 💰
-Thinks *inside* tool calls — reasons while deciding which tool to invoke, self-corrects mid-execution. Eliminates redundant reasoning passes between steps. Ideal for Hermes cron scheduler (daily reports, news digests). Eliminates tool-call errors in automated runs.
+The original evaluation recommended reasoning/tool-use behavior for cron workflows. No model eliminates tool-call errors; scheduled work still requires task-level execution and delivery verification.
 
 **Pricing:** $0.259/M input, $0.42/M output (OpenRouter) — cheapest executor by far.
 
@@ -100,7 +102,7 @@ Built-in Google search grounding and URL context reading. Hermes agent can cite 
 **Use for:** Web grounding, search-augmented tasks, citation-heavy workflows.
 
 ### Gemini 2.5 Flash — "Default Auxiliary"
-The default auxiliary model baked into Hermes Agent. No config required. Handles image analysis, web page summarization, and browser screenshot analysis automatically. Most users are already running this whether they know it or not.
+This was described as the auxiliary default in the original notes. It is not a current universal default. Current Hermes resolves auxiliary providers/models by task, configuration, credentials, and fallback policy; inspect the selected version rather than assuming Gemini 2.5 Flash is in use. See [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration).
 
 **Use for:** Side tasks, image/screenshot analysis, web page summarization.
 
@@ -141,11 +143,13 @@ M2.7 exists. No reason to use M2.5 anymore.
 |------|-------------|-------------|----------------|
 | Orchestrator | GPT-5.4 | Qwen 3.6 Plus | Kimi K2.5 (swarm), Gemini 3.1 Pro Preview (multimodal) |
 | Executor | GLM 5.1 | DeepSeek V3.2 ($0.26/$0.42) | MiMo-V2-Pro ($1/$3), M2.7 (agentic-native) |
-| Auxiliary | Gemini 2.5 Flash (default) | Gemini 3 Flash Preview (search) | MiMo-V2-Flash (HTML only) |
+| Auxiliary | Gemini 2.5 Flash (historical default claim) | Gemini 3 Flash Preview (search) | MiMo-V2-Flash (HTML only) |
 
 ---
 
-## Hermes Routing Policy
+## Historical Fleet Routing (Retired)
+
+The following table records one former deployment's choices. None of its lanes, subscription names, local endpoints, or fallback rules should be installed or applied as current policy.
 
 || Lane | Model | Role |
 |------|-------|------|
@@ -161,7 +165,7 @@ M2.7 exists. No reason to use M2.5 anymore.
 | Marketing / messaging | GPT-5.4 | Quality writing |
 | Ideation deepening | MiniMax-M2.7 | Volume ideation |
 
-> **OpenRouter is fallback-only.** All primary lanes use direct API subscriptions (Codex Max, Z.ai Max, KimiCode Moderato) or local inference. OpenRouter is used only when a primary provider is unavailable.
+> **Historical fleet constraint only:** this deployment used OpenRouter as fallback. Upstream Hermes supports OpenRouter as a primary provider too; this is not a product restriction.
 
 ---
 
@@ -173,18 +177,18 @@ Since Hermes v0.8, you can hot-swap models mid-session:
 - Session continues with the new model — no restart needed
 - Typical pattern: start with orchestrator for planning, swap to executor for implementation
 
-Fleet-wide switch: edit 1-2 lines in `config.yml` and all agents update.
+`/model` changes the active session's model; profile defaults and separately pinned jobs must be handled explicitly. Editing one profile's `config.yaml` does not update every profile. See [Profiles](https://hermes-agent.nousresearch.com/docs/user-guide/profiles) and [Cron](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron).
 
 ---
 
-## Key Takeaways
+## Original Evaluation Conclusions (Historical, Not Recommendations)
 
 1. **No single best model** — role-based routing beats raw benchmarks every time.
 2. **Chinese models dominate agentic roles** — Qwen, GLM, Kimi, MiMo, DeepSeek, MiniMax all outperform Western counterparts for specific roles, often at better value.
 3. **GPT-5.4 is the overall king** but expensive — pair with budget executors for cost efficiency.
 4. **Claude has regressed badly** — avoid for agentic workflows until further notice.
 5. **Context recovery matters** — GLM-5.1's post-compaction recovery is a real operational advantage.
-6. **Tool-call reasoning matters** — DeepSeek V3.2's "think inside tool calls" eliminates cron errors.
+6. **Tool-call reasoning was valued** — reliability still needs measured workflow evidence; it never eliminates cron errors.
 7. **DeepSeek V3.2 is the cost king** — $0.259/$0.42 makes it the cheapest reliable executor on the market.
 
 ---

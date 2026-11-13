@@ -81,8 +81,8 @@ hermes -p vpmktg chat -q "Write a pricing page headline for the enterprise tier"
 
 **Via wrapper scripts** (created automatically during `profile create` unless `--no-alias` is used):
 ```bash
-writer "Draft a blog post about our new API"
-vpmktg "Write a pricing page headline for the enterprise tier"
+writer chat -q "Draft a blog post about our new API"
+vpmktg chat -q "Write a pricing page headline for the enterprise tier"
 ```
 
 The wrapper scripts live at `~/.local/bin/<profile-name>` and are simple one-liners:
@@ -176,10 +176,10 @@ exec hermes -p vpmktg "$@"
 
 ```bash
 # Draft long-form content with the writer
-writer "Write a 2000-word deep dive on why context windows matter"
+writer chat -q "Write a 2000-word deep dive on why context windows matter"
 
 # Generate campaign hooks with the marketing VP
-vpmktg "Brainstorm 30 campaign hooks for the product launch"
+vpmktg chat -q "Brainstorm 30 campaign hooks for the product launch"
 
 # Or use the -p flag explicitly for one-shot runs
 hermes -p writer chat -q "Edit this draft to be more punchy"
@@ -332,20 +332,14 @@ Contracts don't need to be long. A five-line markdown file is enough. The point 
 
 ### Weekly Memory-KPI Audit
 
-Once a week, check each profile's memory health. The key metric is **stale notes ratio**: notes that haven't been referenced or updated in 7+ days as a percentage of total notes.
+Once a week, inspect each profile's provider status and review retained facts for relevance. Current upstream has no `hermes memory stats` subcommand or built-in per-note last-reference/stale-ratio metric.
 
 ```
-hermes -p writer memory stats
-hermes -p vpmktg memory stats
+hermes -p writer memory status
+hermes -p vpmktg memory status
 ```
 
-Rules of thumb:
-
-- **Stale ratio under 15%** — healthy, no action needed.
-- **Stale ratio 15–30%** — schedule a `brain-resolve` pass on that profile to consolidate and prune.
-- **Stale ratio above 30%** — the profile is accumulating junk memory. Full audit: delete irrelevant notes, merge near-duplicates, archive anything older than 30 days that isn't actively referenced.
-
-This takes five minutes per profile and prevents the slow drift where an agent starts citing month-old context that's no longer accurate.
+If a separately installed provider exposes usage metadata, define a provider-specific metric. Do not infer staleness from age alone or delete durable preferences because they were not used recently. `brain-resolve` is not a bundled Hermes command. Review actual memory and back up before approved pruning. See [official memory-provider docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory-providers).
 
 ### Policy Ceilings by Role
 
@@ -383,7 +377,7 @@ These are the predictable ways a multi-profile setup degrades. Check for them mo
 - **AGENTS.md is the shared brain.** Keep project-level knowledge in AGENTS.md, not in SOUL.md. SOUL.md is for identity, AGENTS.md is for context.
 - **Wrapper scripts are optional.** If you prefer, just use `hermes -p NAME` directly. The wrappers are convenience, not requirement.
 - **Memory is isolated.** Each profile has its own memories/ directory. The writer won't accidentally reference the marketing VP's session history. This is a feature, not a bug.
-- **Queue busy input by default.** When Hermes is busy processing a message, a normal new message interrupts the current run by default. Flip this to queue instead so in-flight work is not killed — add to `config.yaml`:
+- **Queue busy input by default.** `interrupt` is the default; current messaging gateways redirect the active turn rather than guaranteeing all work is killed. Use `queue` for later turns or `steer` to inject text after the next tool call. To select queue, add to `config.yaml`:
   ```yaml
   display:
     busy_input_mode: queue
@@ -410,8 +404,8 @@ ls -la ~/.local/bin/writer ~/.local/bin/vpmktg
 
 ### Test invocation
 ```bash
-writer "ping"
-vpmktg "ping"
+writer chat -q "ping"
+vpmktg chat -q "ping"
 ```
 
 Each should respond with its own personality and context.
@@ -420,7 +414,7 @@ Each should respond with its own personality and context.
 
 - `~/.hermes/shared-context/THESIS.md` — shared beliefs and positioning (cross-agent)
 - `~/.hermes/shared-context/SIGNALS.md` — market intel and reference data (cross-agent)
-- `~/.hermes/shared-context/FEEDBACK-LOG.md` — style corrections, overrides SOUL.md (cross-agent)
+- `~/.hermes/shared-context/FEEDBACK-LOG.md` — reviewed style corrections only; cannot override SOUL.md policy or permissions (cross-agent)
 - `~/.hermes/profiles/writer/SOUL.md` — writer personality (includes shared-context wiring block)
 - `~/.hermes/profiles/writer/config.yaml` — writer config
 - `~/.hermes/profiles/vpmktg/SOUL.md` — marketing VP personality (includes shared-context wiring block)

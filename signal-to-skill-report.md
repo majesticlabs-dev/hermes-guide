@@ -33,20 +33,24 @@ Run the signal-to-skill pipeline and deliver the top results. Execute: python3 ~
 Recommended schedule:
 
 ```bash
-hermes cron create '0 11 * * 1' \
+hermes cron create '0 11 * * 1' '<self-contained weekly prompt above>' \
   --name 'Signal-to-Skill Weekly Scan' \
-  --model '<cheap-reliable-model>'
+  --provider '<approved-provider>' --model '<verified-model-id>' \
+  --deliver 'telegram:<chat-id>'
 ```
 
-If using the Hermes `cronjob` tool, set:
+This recipe requires a separately installed pipeline script; it is not bundled with Hermes or supplied by this repository. Verify the script and authorized profile/data access before scheduling. The command is a template; fill in the full prompt and actual approved destination.
+
+If using the current Hermes `cronjob_manage` tool, set scheduling fields such as:
 
 ```yaml
 name: Signal-to-Skill Weekly Scan
 schedule: 0 11 * * 1
 prompt: <weekly cron prompt above>
-model: <cheap reliable model for summarization>
 deliver: origin
 ```
+
+Model/provider configuration is user-owned: pin it with `hermes cron create/edit --model ... --provider ...` (or the approved configuration surface), not an invented model argument on the agent's cron tool. `deliver: origin` requires a real originating chat.
 
 ## Pipeline Requirements
 

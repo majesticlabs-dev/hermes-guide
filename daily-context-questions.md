@@ -37,21 +37,21 @@ The cycle repeats every morning. One question, one answer, filed to the right pl
 Create a Hermes cron job that runs daily (e.g., 9:00 AM local time):
 
 ```bash
-hermes cron create \
+hermes cron create "0 9 * * *" \
+  "<self-contained prompt from the template below>" \
   --name "daily-context-question" \
-  --schedule "0 9 * * *" \
-  --prompt "Daily personal-context question"
+  --deliver "telegram:<chat-id>"
 ```
 
 ### Cron Prompt Template
 
-Use this as the cron job's system prompt:
+Use this as the cron job's task prompt. Schedule and prompt are positional CLI arguments; `--schedule` and `--prompt` are edit flags, not create flags. Replace the placeholders and explicitly approve the personal-data storage and delivery destination before scheduling. A standalone CLI does not necessarily have an origin chat to infer.
 
 ```
 You are running a daily personal-context routine.
 
 1. Read ~/.hermes/personal-memory/daily-context.md and ~/.hermes/personal-memory/question-log.md.
-2. Check if yesterday's question was answered. If yes, file the answer into the right section of daily-context.md.
+2. Retrieve yesterday's answer from the explicitly configured conversation/session source. Cron starts fresh and does not inherit the chat. If the answer cannot be retrieved, mark it unknown; do not infer or invent it. If answered and the user approved retaining it, file the answer into the right section of daily-context.md.
 3. Log what happened in question-log.md (date, question, answered yes/no).
 4. Find a gap — something you don't know about the user that would be useful context. Look at what's already recorded and pick something adjacent, personal, and specific. NOT generic.
 5. Ask exactly one question. Send it to the user via their chat channel.
@@ -66,7 +66,7 @@ Question quality examples:
 
 ### Model Choice
 
-A local model (e.g., `Carnice-9b`) or the cheapest reliable local executor is sufficient for this task. It's simple read/file/write/ask work — no heavy reasoning needed.
+Use a model proven reliable for this workflow within the user's approved model policy. No particular local endpoint or model is required or presumed available. Model/provider pins are user-owned CLI configuration; do not silently replace the active model for cost reasons. See [official cron documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron).
 
 ---
 

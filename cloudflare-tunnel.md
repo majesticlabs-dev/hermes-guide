@@ -4,7 +4,7 @@ How to expose your local Hermes gateway to the internet using Cloudflare Tunnel.
 
 ## Why Cloudflare Tunnel?
 
-Your Hermes gateway runs on `localhost:8642`. Telegram webhooks and mini apps need HTTPS to reach it. Cloudflare Tunnel gives you:
+When the optional API server is enabled, it listens on `127.0.0.1:8642` by default. Running a messaging gateway alone does not guarantee an HTTP listener. Enable and protect the intended service using [official API setup](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server) before exposing it. Telegram long-polling does not require a public tunnel; browser Mini Apps need an HTTPS web origin. A custom Mini App proxy may listen on a different port. Cloudflare Tunnel gives you:
 
 - No port forwarding (firewall stays sealed)
 - No public IP exposed

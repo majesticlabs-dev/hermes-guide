@@ -1,5 +1,7 @@
 # PageIndex (VectifyAI/PageIndex) — Evaluation Guide
 
+> **Historical evaluation:** This is an April 2026 snapshot, not a current PageIndex capability or pricing audit. Commit/contributor counts, test coverage, APIs, cost estimates, and the comparison table have not been revalidated. The integration ideas remain proposals, not installed Hermes features.
+
 **Date:** 2026-04-22 · **License:** MIT · **Repo:** https://github.com/VectifyAI/PageIndex
 
 ## What PageIndex Is

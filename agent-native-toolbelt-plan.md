@@ -1,6 +1,6 @@
 # Agent-Native Toolbelt Implementation Plan
 
-> **For Hermes:** Use this plan when converting repeated agent workflows into deterministic CLIs, local mirrors, skills, and compound commands. The goal is lower drift, lower API/token waste, and more reliable recurring work.
+> **Status: design proposal, not an installed tool inventory.** The commands, phases, and next actions below describe a proposed operator toolbelt; they do not prove a CLI exists or authorize implementing it. Discover current tooling and approval scope before applying any step. The goal is lower drift, lower API/token waste, and more reliable recurring work.
 
 **Source:** Adapted from Matt Rice's X article, “Printing Press Made CLIs Feel Like Agent Superpowers,” and the linked Printing Press workflow concept.
 

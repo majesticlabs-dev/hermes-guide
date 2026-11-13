@@ -2,6 +2,8 @@
 
 How to add new endpoints, middleware, and features to the Hermes API server.
 
+> **Scope:** Current stock API extension points, not the old locally patched Mini App server. See [official API Server docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server). Audited against upstream `4429693a62f784b5f2bd3c7f773c154be97b0d98`; inspect your installed version before editing internals.
+
 ## File Location
 
 `gateway/platforms/api_server.py` — the aiohttp-based web server.
@@ -12,7 +14,7 @@ Three steps: write a handler, register the route, add auth if needed.
 
 ### 1. Write the Handler
 
-Handler methods live on the `ApiServerAdapter` class. They take a `web.Request` and return a `web.Response`.
+Handler methods live on the `APIServerAdapter` class. They take a `web.Request` and return a `web.Response`.
 
 ```python
 async def _handle_my_endpoint(self, request: "web.Request") -> "web.Response":
@@ -47,36 +49,29 @@ async def _handle_my_post(self, request: "web.Request") -> "web.Response":
 
 ### 2. Register the Route
 
-In the `connect()` method (search for `router.add_get`):
+Add rows in `_http_route_table()`, which `connect()` uses to register routes:
 
 ```python
-self._app.router.add_get("/api/my-endpoint", self._handle_my_endpoint)
-self._app.router.add_post("/api/my-post", self._handle_my_post)
+("GET", "/api/my-endpoint", self._handle_my_endpoint),
+("POST", "/api/my-post", self._handle_my_post),
 ```
 
 ### 3. Auth or No Auth
 
-- `_check_auth()` validates Bearer token or Telegram initData
-- Leave it out for public endpoints (like `/health` or `/api/commands`)
+- `_check_auth()` validates the stock API Bearer token, not Telegram Mini App initData
+- `/health` is public; `/api/commands` was a custom Mini App route, not a stock public endpoint
 - Always add it for endpoints that modify state or expose private data
 
 ## Auth System
 
-The gateway uses a dual auth flow in `_check_auth()`:
-
-1. **Telegram initData** — Mini App auth from Telegram WebApp
-   - first try Ed25519 verification using Telegram's public key
-   - if that fails, fall back to HMAC-SHA256 verification using `TELEGRAM_BOT_TOKEN`
-2. **Bearer token** — Standard `Authorization: Bearer <API_SERVER_KEY>`
-
-Both are checked. Telegram auth is tried first. If neither validates, return 401.
+The stock `_check_auth()` compares the HTTP Authorization header's Bearer value with the configured `API_SERVER_KEY`. The previous Ed25519/HMAC description applied to custom Mini App code, not current upstream Hermes. A separate proxy must implement Telegram validation and user authorization itself before translating to a Bearer token. Never expose the upstream token in frontend assets. Some API surfaces have additional scoped permission checks; follow their existing authorization contract.
 
 ## CORS
 
 CORS is handled by `cors_middleware` in `api_server.py`.
 
 **Configuration:** Set `API_SERVER_CORS_ORIGINS` in `.env`:
-- `*` — allow all origins (needed for Telegram Mini App)
+- `*` — allow all origins; not inherently required by Telegram Mini Apps and not an auth mechanism
 - `https://example.com` — allow specific origin
 - Empty — block all browser requests (non-browser clients still work)
 
@@ -88,27 +83,15 @@ _CORS_HEADERS = {
 }
 ```
 
-For Telegram Mini Apps, `X-Telegram-Init-Data` and `X-Hermes-Session-Id` are not optional. If you forget them, the browser kills your request at preflight and you get 403s that look like auth problems but aren't.
+The block above is a custom extension example, not the current stock header set. Stock allows `GET, POST, DELETE, OPTIONS` and `Authorization, Content-Type, Idempotency-Key, X-Hermes-Session-Id`. `PATCH` and `X-Telegram-Init-Data` need explicit handling for a custom browser client; the session header is already present. Prefer an explicit origin allowlist. Server-to-server clients generally do not need CORS.
 
 ## Static File Serving
 
-The `_handle_miniapp` handler shows the pattern for serving static files from disk:
-
-```python
-async def _handle_static(self, request):
-    filename = request.match_info.get("filename", "index.html")
-    file_path = os.path.join(static_dir, filename)
-    if not os.path.isfile(file_path):
-        return web.Response(status=404, text="Not Found")
-    # Determine content type from extension
-    with open(file_path, "rb") as f:
-        data = f.read()
-    return web.Response(body=data, content_type=ct)
-```
+There is no stock `_handle_miniapp` handler. Use a traversal-safe static-file mechanism and review security headers before adding a UI. The previous unchecked path-join example is not an acceptable public-file boundary.
 
 ## Available Imports
 
-The gateway can import from:
+The old custom integration used imports such as these. They are version-coupled implementation details, not a stable public extension API:
 - `hermes_cli.commands` — Command registry (`COMMAND_REGISTRY`, `resolve_command`)
 - `hermes_cli.config` — Configuration loading
 - `agent.model_metadata` — Model context lengths
@@ -128,10 +111,10 @@ This respects the profile system where each profile has its own home directory.
 
 ## Testing
 
-After changes, verify syntax:
+After changes, verify syntax, then run relevant gateway tests and exercise the new endpoint with authenticated/unauthenticated requests, invalid inputs, profile boundaries, and browser preflight where applicable. Syntax alone is not acceptance evidence:
 ```bash
 cd hermes-agent
-source venv/bin/activate
+# Use the selected development environment; see python-uv-venv.md.
 python3 -c "import py_compile; py_compile.compile('gateway/platforms/api_server.py', doraise=True)"
 ```
 
@@ -141,16 +124,16 @@ Test with curl:
 curl http://localhost:8642/health
 
 # With auth
-curl -H "Authorization: Bearer YOUR_KEY" http://localhost:8642/api/model-info
+curl -H "Authorization: Bearer YOUR_KEY" http://localhost:8642/v1/models
 
 # Via tunnel
-curl https://hs.yourdomain.com/api/commands
+curl https://hs.yourdomain.com/health
 ```
 
 If you are debugging the mini app dashboard specifically, inspect the exact JSON shape the frontend gets:
 ```bash
 curl -s http://localhost:8642/health | jq
-curl -s -H "Authorization: Bearer YOUR_KEY" http://localhost:8642/api/processes | jq
+# /api/processes is custom, not a stock API check.
 ```
 
 ## Common Pitfalls
@@ -159,7 +142,7 @@ curl -s -H "Authorization: Bearer YOUR_KEY" http://localhost:8642/api/processes 
 - **CORS blocks custom headers** — if your client sends custom headers, add them to `_CORS_HEADERS`
 - **PATCH method not in CORS** — add it to `Access-Control-Allow-Methods` if you use it
 - **Static file paths must use `get_hermes_home()`** — hardcoding `~/.hermes` breaks profiles
-- **Mini app auth is easy to botch** — Telegram auth needs the right signed payload; keep the HMAC fallback because it's far less fragile
+- **Mini app auth is easy to botch** — custom Telegram auth must verify signature, freshness, user allowlist, and failure behavior independently of stock Bearer auth
 - **Frontend and backend data shapes must match** — if the dashboard expects `name`, `running`, `uptime`, and you return something else, the UI will look broken even though the request succeeded
 - **CloudStorage can hand you garbage** — normalize values before rendering or you'll end up displaying `[object Object]`
 - **aiohttp is synchronous-ish** — handlers are async but the agent loop inside `_handle_chat_completions` runs synchronously in a thread
