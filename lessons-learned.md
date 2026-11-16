@@ -198,6 +198,16 @@ When a Hermes-managed dependency import works but an external helper fails impor
 
 ---
 
+## 15. Retry Safe Finalization with Source Custody
+
+A recurring ingestion workflow needs a verifiable handoff, not just a worker's completion message. Freeze a manifest containing the source inventory, original hashes, intended destinations, owned output paths, baseline revision, checks and exact run identity. Independently compare source bodies with the resulting canonical additions before accepting extraction.
+
+Before each finalizer mutation, record the original bytes or an exact reversible patch, before hash and intended after hash in a run-scoped journal outside the knowledge repository. Record the observed result immediately afterward. On retry, accept only the frozen input generation or the exact verified after generation from that same run. A timeout is not permission to adopt unexplained file drift or repeat a completed move.
+
+Accept disjoint sources independently. Keep unread or conflicting sources unchanged and report a partial result with exact blockers. Verify byte-preserving archival, repaired active links, targeted checks, intended Git paths and the remote commit before claiming closure. Retrieval indexing is a separate gate: unavailable indexing must not be reported as semantic acceptance.
+
+---
+
 ## The Meta-Lesson
 
 All of these lessons came from running the scorecard honestly and reviewing what went wrong. The scorecard didn't create these insights — the data did. The scorecard just made sure the data was collected and reviewed regularly.
