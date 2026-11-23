@@ -86,7 +86,8 @@ Look for `delegation` enabled, `max_concurrent_children > 1`, `max_async_childre
 
 For file or code work:
 
-- Read the existing artifact before editing.
+- Establish the current edit baseline before writing. For a targeted patch, read the unique matching region. Before replacing an existing file, read every page of its current content and merge the requested change without discarding unrelated material. A relocated file is still an existing file; an old excerpt is not a replacement baseline.
+- If a write is refused because the file changed or the baseline is incomplete, read the current file and merge again. Do not switch tools to bypass the refusal.
 - After editing, re-read or diff the touched artifact.
 - Run the smallest relevant check: syntax, lint, unit test, smoke test, link check, or `git status`.
 - Report only checks that actually ran. Never write “tests pass” unless the test command returned success.

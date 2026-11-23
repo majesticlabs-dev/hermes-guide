@@ -208,6 +208,14 @@ Accept disjoint sources independently. Keep unread or conflicting sources unchan
 
 ---
 
+## 16. Requested Notifications Are Not Registered Callbacks
+
+When starting a bounded background task, request completion notification and inspect the tool's returned notification-support fields. A launch request alone does not establish that a callback exists. If notifications are unsupported, establish bounded explicit supervision before yielding; do not promise an automatic return.
+
+Match delayed exit notifications to the exact process handle. If the original task has already been replaced, inspect the replacement and its artifacts rather than restarting work or repeating a resolved blocker. A running process proves liveness, not progress; a zero exit code still requires artifact verification.
+
+---
+
 ## The Meta-Lesson
 
 All of these lessons came from running the scorecard honestly and reviewing what went wrong. The scorecard didn't create these insights — the data did. The scorecard just made sure the data was collected and reviewed regularly.
